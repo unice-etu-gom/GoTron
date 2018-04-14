@@ -34,6 +34,11 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/out/lib )
 # # CDK
 # set( CDK_LIBS -lcdk )
 
+# SDL
+FIND_PACKAGE(SDL        REQUIRED)
+FIND_PACKAGE(SDL_ttf    REQUIRED)
+INCLUDE_DIRECTORIES(${SDL_INCLUDE_DIR})
+
 
 
 # ------------------------------------------------------------------------------
