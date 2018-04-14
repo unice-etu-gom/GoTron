@@ -1,0 +1,8 @@
+
+set( DESTDIR_TESTS ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tests )
+
+set( DIR_TESTS_AUTOMATIQUES  ${TESTS}/auto )
+add_subdirectory( ${DIR_TESTS_AUTOMATIQUES} )
+
+set( DIR_TESTS_MANUELS  ${TESTS}/manu )
+add_subdirectory( ${DIR_TESTS_MANUELS} )
