@@ -1,6 +1,9 @@
 set ( CORE_SRC
     grid.c
 
+    macros.h
+    TBool.h
+
     log/log.h
 )
 

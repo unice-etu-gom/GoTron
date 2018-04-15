@@ -1,7 +1,7 @@
 include_directories( . )
 
 add_subdirectory( core )
-#add_subdirectory( ui )
+add_subdirectory( ui )
 
 
 
@@ -10,8 +10,10 @@ add_subdirectory( core )
 add_executable( ${EXE} main.c )
 
 target_link_libraries( ${EXE}
-#    core
-#    ui
+    core
+    ui
+    ${SDL_LIBRARY}
+    ${SDL_TTF_LIBRARY}
 #    ${CURSES_LIBRARIES}
 #    ${CURSES_LIBS}
 #    ${CDK_LIBS}
