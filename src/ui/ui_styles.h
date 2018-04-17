@@ -10,11 +10,13 @@ typedef struct _SUiTTFStylePrivate* SStyle;
 extern const char*  C_FONT_TRON;
 
 extern SDL_Color    C_SDL_COLOR_BLACK;
+extern SDL_Color    C_SDL_COLOR_GREY50;
 extern SDL_Color    C_SDL_COLOR_WHITE;
 extern SDL_Color    C_SDL_COLOR_RED;
 extern SDL_Color    C_SDL_COLOR_YELLOW;
 extern SDL_Color    C_SDL_COLOR_GREEN;
 extern SDL_Color    C_SDL_COLOR_AQUA;
+extern SDL_Color    C_SDL_COLOR_AQUA50;
 extern SDL_Color    C_SDL_COLOR_BLUE;
 extern SDL_Color    C_SDL_COLOR_PINK;
 
