@@ -34,7 +34,7 @@ typedef enum    _EGridCellTypes
 /* -----------------------------------------------------------------------------
  *  Fonctions de gestion de la grille
  */
-TCoreGrid   grid_create(size_t argRows, size_t argCols );
+TCoreGrid   grid_create( size_t argCols, size_t argRows );
 void        grid_destroy( TCoreGrid argGrid );
 
 

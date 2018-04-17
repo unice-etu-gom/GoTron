@@ -102,7 +102,7 @@ size_t  grid_columnsCount(TCoreGrid argGrid)
 /* ########################################################################## */
 /* ########################################################################## */
 
-TCoreGrid   grid_create(size_t argRows, size_t argCols)
+TCoreGrid   grid_create(size_t argCols, size_t argRows)
 {
     TCoreGrid   retVal  = (TCoreGrid)malloc( sizeof( struct _SCoreGrid ) );
 
