@@ -22,6 +22,8 @@ typedef enum    _EGridCellTypes
     EGridCellUnknown    = -1,
     EGridCellEmpty      = 0,
     EGridCellWall,
+    EGridCellPlayer1,
+    EGridCellPlayer2,
 
     _EGridCellTypesCount
 

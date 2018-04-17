@@ -12,6 +12,8 @@
 /* ########################################################################## */
 
 #define C_CHAR_CELLTYPE_EMPTY   (' ')
+#define C_CHAR_CELLTYPE_PLAYER1 ('1')
+#define C_CHAR_CELLTYPE_PLAYER2 ('2')
 #define C_CHAR_CELLTYPE_WALL    ('W')
 
 /* ########################################################################## */
@@ -64,6 +66,16 @@ char grid_cellType_toChar(const TEGridCellType argType)
     {
         case    EGridCellEmpty:
             retVal  = C_CHAR_CELLTYPE_EMPTY;
+            break;
+
+
+        case    EGridCellPlayer1:
+            retVal  = C_CHAR_CELLTYPE_PLAYER1;
+            break;
+
+
+        case    EGridCellPlayer2:
+            retVal  = C_CHAR_CELLTYPE_PLAYER2;
             break;
 
 
