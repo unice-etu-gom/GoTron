@@ -4,7 +4,7 @@
 #include "ui.h"
 
 
-int ui_menu_main(TUiContext *argContextPtr);
+int ui_menu_main(TContext *argContextPtr);
 
 
 #endif  /*< UI_MENUS_H */

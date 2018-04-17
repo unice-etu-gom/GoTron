@@ -2,6 +2,7 @@
 
 #include "core/macros.h"
 #include "core/TBool.h"
+#include "core/TContext.h"
 
 #include "ui_private.h"
 #include "ui_styles.h"
@@ -21,12 +22,12 @@
 /* ########################################################################## */
 /* ########################################################################## */
 
-int     ui_menu_main(TUiContext *argContextPtr)
+int     ui_menu_main(TContext *argContextPtr)
 {
     int retVal  = EXIT_SUCCESS;
 
 
-    TUiContext  p_context   = (*argContextPtr);
+    TUiContext  p_contextUi = argContextPtr->ui;
 
 
 
@@ -41,7 +42,7 @@ int     ui_menu_main(TUiContext *argContextPtr)
 
 
     TUiText txtTitle    = ui_text_create( "Go_Tron",
-                                          p_context->style_title );
+                                          p_contextUi->style_title );
 
     TUiText txtArcade   = ui_text_create( "Arcade",
                                           lStyleItemDefault );
@@ -105,11 +106,11 @@ int     ui_menu_main(TUiContext *argContextPtr)
     {
         ui_text_setAlpha( txtTitle, lAlpha );
 
-        ui_screenClear( p_context );
-        ui_text_blit( txtTitle, p_context->screen );
+        ui_screenClear( *argContextPtr );
+        ui_text_blit( txtTitle, p_contextUi->screen );
 
 
-        if( SDL_Flip( p_context->screen ) == -1 )
+        if( SDL_Flip( p_contextUi->screen ) == -1 )
         {
             return EXIT_FAILURE;
         }
@@ -129,16 +130,16 @@ int     ui_menu_main(TUiContext *argContextPtr)
         ui_text_setAlpha( txtPvP,       lAlpha );
 
 
-        ui_screenClear( p_context );
+        ui_screenClear( *argContextPtr );
 
-        ui_text_blit( txtArcade,    p_context->screen );
-        ui_text_blit( txtExit,      p_context->screen );
-        ui_text_blit( txtPvAI,      p_context->screen );
-        ui_text_blit( txtPvP,       p_context->screen );
-        ui_text_blit( txtTitle,     p_context->screen );
+        ui_text_blit( txtArcade,    p_contextUi->screen );
+        ui_text_blit( txtExit,      p_contextUi->screen );
+        ui_text_blit( txtPvAI,      p_contextUi->screen );
+        ui_text_blit( txtPvP,       p_contextUi->screen );
+        ui_text_blit( txtTitle,     p_contextUi->screen );
 
 
-        if( SDL_Flip( p_context->screen ) == -1 )
+        if( SDL_Flip( p_contextUi->screen ) == -1 )
         {
             return EXIT_FAILURE;
         }
@@ -299,16 +300,16 @@ int     ui_menu_main(TUiContext *argContextPtr)
         }
 
 
-        ui_screenClear( p_context );
+        ui_screenClear( *argContextPtr );
 
-        ui_text_blit( txtArcade,    p_context->screen );
-        ui_text_blit( txtExit,      p_context->screen );
-        ui_text_blit( txtPvAI,      p_context->screen );
-        ui_text_blit( txtPvP,       p_context->screen );
-        ui_text_blit( txtTitle,     p_context->screen );
+        ui_text_blit( txtArcade,    p_contextUi->screen );
+        ui_text_blit( txtExit,      p_contextUi->screen );
+        ui_text_blit( txtPvAI,      p_contextUi->screen );
+        ui_text_blit( txtPvP,       p_contextUi->screen );
+        ui_text_blit( txtTitle,     p_contextUi->screen );
 
 
-        if( SDL_Flip( p_context->screen ) == -1 )
+        if( SDL_Flip( p_contextUi->screen ) == -1 )
         {
             return 1;
         }

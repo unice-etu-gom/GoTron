@@ -26,16 +26,16 @@
 /* ########################################################################## */
 /* ########################################################################## */
 
-int ui_construct(TUiContext *argContextPtr)
+int ui_construct(TContext *argContextPtr)
 {
     int retVal  = EXIT_SUCCESS;
 
 
     /* Instanciate the struct */
-    (*argContextPtr)    = (TUiContext)malloc(sizeof(struct _SUiContextPrivate));
+    (*argContextPtr).ui = (TUiContext)malloc(sizeof(struct _SUiContextPrivate));
 
     /* Create a pointer for convenience */
-    TUiContext  p_context   = (*argContextPtr);
+    TUiContext  p_context   = (*argContextPtr).ui;
 
     p_context->screenBackgroundColor    = C_SDL_COLOR_BLACK;
 
@@ -97,7 +97,7 @@ int ui_construct(TUiContext *argContextPtr)
 /* ########################################################################## */
 /* ########################################################################## */
 
-int ui_destruct(TUiContext *argContext)
+int ui_destruct(TContext *argContext)
 {
     int retVal  = EXIT_SUCCESS;
 
@@ -109,11 +109,11 @@ int ui_destruct(TUiContext *argContext)
     }
     else
     {
-        ui_style_delete( &((*argContext)->style_title) );
+        ui_style_delete( &(argContext->ui->style_title) );
 
         TTF_Quit();
         SDL_Quit();
-        FREE( (*argContext) )
+        FREE( argContext->ui )
     }
 
 
@@ -123,7 +123,7 @@ int ui_destruct(TUiContext *argContext)
 /* ########################################################################## */
 /* ########################################################################## */
 
-int     ui_exec(TUiContext *argContext)
+int     ui_exec(TContext *argContext)
 {
     int retVal  = EXIT_SUCCESS;
 
@@ -140,14 +140,14 @@ int     ui_exec(TUiContext *argContext)
 /* ########################################################################## */
 /* ########################################################################## */
 
-void ui_screenClear(TUiContext argContext)
+void ui_screenClear(TContext argContext)
 {
-    SDL_FillRect( argContext->screen,
+    SDL_FillRect( argContext.ui->screen,
                   NULL,
-                  SDL_MapRGB( argContext->screen->format,
-                              argContext->screenBackgroundColor.r,
-                              argContext->screenBackgroundColor.g,
-                              argContext->screenBackgroundColor.b ) );
+                  SDL_MapRGB( argContext.ui->screen->format,
+                              argContext.ui->screenBackgroundColor.r,
+                              argContext.ui->screenBackgroundColor.g,
+                              argContext.ui->screenBackgroundColor.b ) );
 }
 
 /* ########################################################################## */
