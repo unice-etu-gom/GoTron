@@ -1,5 +1,7 @@
 set ( UI_SRC
     ui.c
+    ui_game.c
+    ui_game.h
     ui_grid.c
     ui_grid.h
     ui_menus.c
