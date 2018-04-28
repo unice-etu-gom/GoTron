@@ -139,16 +139,3 @@ int     ui_exec(TContext *argContext)
 
 /* ########################################################################## */
 /* ########################################################################## */
-
-void ui_screenClear(TContext argContext)
-{
-    SDL_FillRect( argContext.ui->screen,
-                  NULL,
-                  SDL_MapRGB( argContext.ui->screen->format,
-                              argContext.ui->screenBackgroundColor.r,
-                              argContext.ui->screenBackgroundColor.g,
-                              argContext.ui->screenBackgroundColor.b ) );
-}
-
-/* ########################################################################## */
-/* ########################################################################## */

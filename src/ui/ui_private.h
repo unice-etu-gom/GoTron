@@ -31,6 +31,9 @@ extern const int    C_SCREEN_BPP;
 /* ########################################################################## */
 /* ########################################################################## */
 
+void    ui_surfaceClear(SDL_Surface *argSurfacePtr);
+void    ui_surfaceFill( SDL_Surface* argSurfacePtr, const SDL_Color argColor );
+
 void    ui_sdl_apply_surface( int x, int y,
                               SDL_Surface* source, SDL_Surface* destination,
                               SDL_Rect* clip );

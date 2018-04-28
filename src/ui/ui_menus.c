@@ -106,7 +106,8 @@ int     ui_menu_main(TContext *argContextPtr)
     {
         ui_text_setAlpha( txtTitle, lAlpha );
 
-        ui_screenClear( *argContextPtr );
+        ui_surfaceFill( p_contextUi->screen,
+                         argContextPtr->ui->screenBackgroundColor );
         ui_text_blit( txtTitle, p_contextUi->screen );
 
 
@@ -130,7 +131,8 @@ int     ui_menu_main(TContext *argContextPtr)
         ui_text_setAlpha( txtPvP,       lAlpha );
 
 
-        ui_screenClear( *argContextPtr );
+        ui_surfaceFill( p_contextUi->screen,
+                         argContextPtr->ui->screenBackgroundColor );
 
         ui_text_blit( txtArcade,    p_contextUi->screen );
         ui_text_blit( txtExit,      p_contextUi->screen );
@@ -300,7 +302,8 @@ int     ui_menu_main(TContext *argContextPtr)
         }
 
 
-        ui_screenClear( *argContextPtr );
+        ui_surfaceFill( p_contextUi->screen,
+                         argContextPtr->ui->screenBackgroundColor );
 
         ui_text_blit( txtArcade,    p_contextUi->screen );
         ui_text_blit( txtExit,      p_contextUi->screen );

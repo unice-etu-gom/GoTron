@@ -25,3 +25,27 @@ void    ui_sdl_apply_surface( int x, int y,
 
 /* ########################################################################## */
 /* ########################################################################## */
+
+void    ui_surfaceClear(SDL_Surface *argSurfacePtr)
+{
+    ui_surfaceFill( argSurfacePtr, C_SDL_COLOR_BLACK );
+    SDL_SetColorKey( argSurfacePtr,
+                     SDL_SRCCOLORKEY,
+                     SDL_MapRGB(argSurfacePtr->format, 0, 0, 0 ) );
+}
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+void    ui_surfaceFill(SDL_Surface *argSurfacePtr, const SDL_Color argColor)
+{
+    SDL_FillRect( argSurfacePtr,
+                  NULL,
+                  SDL_MapRGB( argSurfacePtr->format,
+                              argColor.r,
+                              argColor.g,
+                              argColor.b ) );
+}
+
+/* ########################################################################## */
+/* ########################################################################## */

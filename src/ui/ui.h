@@ -9,7 +9,4 @@ int ui_destruct(TContext* argContextPtr);
 
 int ui_exec(TContext* argContext);
 
-
-void    ui_screenClear( TContext argContext );
-
 #endif  /*< UI_H */
