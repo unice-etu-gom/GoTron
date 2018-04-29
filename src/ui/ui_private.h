@@ -38,6 +38,11 @@ void    ui_sdl_apply_surface( int x, int y,
                               SDL_Surface* source, SDL_Surface* destination,
                               SDL_Rect* clip );
 
+void    ui_transition( SDL_Surface* argOld,
+                       SDL_Surface* argNew,
+                       SDL_Surface* argDest );
+
+
 /* ########################################################################## */
 /* ########################################################################## */
 
