@@ -3,6 +3,7 @@
 
 #include <SDL/SDL.h>
 
+#include "ui_game.h"
 #include "ui_styles.h"
 
 /* ########################################################################## */
@@ -17,6 +18,9 @@ struct  _SUiContextPrivate
 
 
     SStyle  style_title;
+
+
+    TSCurrentGame   currentGame;
 };
 
 /* ########################################################################## */
