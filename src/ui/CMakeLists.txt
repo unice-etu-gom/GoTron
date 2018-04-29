@@ -6,6 +6,8 @@ set ( UI_SRC
     ui_grid.h
     ui_menus.c
     ui_menus.h
+    ui_mode_pvp.c
+    ui_mode_pvp.h
     ui_private.c
     ui_private.h
     ui_styles.c

@@ -4,6 +4,7 @@
 #include "core/TBool.h"
 #include "core/TContext.h"
 
+#include "ui_mode_pvp.h"
 #include "ui_private.h"
 #include "ui_styles.h"
 #include "ui_text.h"
@@ -241,11 +242,12 @@ int     ui_menu_main(TContext *argContextPtr)
 #if 0
                 case EMenuItemPvAI:
                     break;
-
-
-                case EMenuItemPvP:
-                    break;
 #endif
+
+
+                case    EMenuItemPvP:
+                    ui_mode_pvp_exec( *argContextPtr );
+                    break;
 
 
                 default:
