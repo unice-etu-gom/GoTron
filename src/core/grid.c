@@ -13,9 +13,21 @@
 /* ########################################################################## */
 /* ########################################################################## */
 
-#define C_CHAR_CELLTYPE_EMPTY   (' ')
+#include "core/log/log.h"
+
+#define TRACE_DBG(format,...) \
+        TRACE_DBG_BASE( "core", format, ##__VA_ARGS__ );
+
+#define TRACE_ERR(format,...) \
+        TRACE_ERR_BASE( "core", format, ##__VA_ARGS__ );
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+#define C_CHAR_CELLTYPE_EMPTY   ('e')
 #define C_CHAR_CELLTYPE_PLAYER1 ('1')
 #define C_CHAR_CELLTYPE_PLAYER2 ('2')
+#define C_CHAR_CELLTYPE_UNKNOWN ('u')
 #define C_CHAR_CELLTYPE_WALL    ('W')
 
 /* ########################################################################## */
@@ -81,12 +93,19 @@ char grid_cellType_toChar(const TEGridCellType argType)
             break;
 
 
+        case    EGridCellUnknown:
+            retVal  = C_CHAR_CELLTYPE_UNKNOWN;
+            break;
+
+
         case    EGridCellWall:
             retVal  = C_CHAR_CELLTYPE_WALL;
             break;
 
 
         default:
+            TRACE_ERR( "Unknown cell type with value %d !",
+                       argType );
             break;
     }
 
