@@ -10,7 +10,6 @@ typedef struct _SUiContextPrivate*  TUiContext;
 
 typedef struct _SContext
 {
-    TCoreGrid   grid;
     TUiContext  ui;
 }   TContext;
 

@@ -41,6 +41,8 @@ static void test_transition(SDL_Surface* argScreenSurfacePtr)
     SDL_Flip( argScreenSurfacePtr );
 
 
+    SStyle  lStyle;
+    ui_style_create( &lStyle, C_FONT_TRON, 10, C_SDL_COLOR_YELLOW );
 
 
     /*
@@ -48,7 +50,8 @@ static void test_transition(SDL_Surface* argScreenSurfacePtr)
      * We do not use a uniform surface as it is interesting to see the behaviour
      * of a "complex" surface.
      */
-    TSCurrentGame lGame = ui_game_create( argScreenSurfacePtr );
+    TSCurrentGame lGame = ui_game_create( argScreenSurfacePtr,
+                                          lStyle );
 
     /* The game grid is blitted to a new surface */
     SDL_Surface* p_surf_new
@@ -57,7 +60,7 @@ static void test_transition(SDL_Surface* argScreenSurfacePtr)
                                      argScreenSurfacePtr->h,
                                      32,
                                      0, 0, 0, 0 );
-    ui_game_blit( lGame, p_surf_new );
+    ui_game_blit( lGame, p_surf_new, UI_GAME_FLAG_LAYERS_ALL );
 
 
 
@@ -80,6 +83,7 @@ static void test_transition(SDL_Surface* argScreenSurfacePtr)
     SDL_FreeSurface( p_surf_new );
     SDL_FreeSurface( p_surf_old );
     ui_game_destroy( &lGame );
+    ui_style_delete( &lStyle );
 }
 
 /* ########################################################################## */

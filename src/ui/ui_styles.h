@@ -7,6 +7,7 @@
 typedef struct _SUiTTFStylePrivate* SStyle;
 
 
+extern const char*  C_FONT_CONST1;
 extern const char*  C_FONT_TRON;
 
 extern SDL_Color    C_SDL_COLOR_BLACK;

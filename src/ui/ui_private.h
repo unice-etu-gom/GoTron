@@ -18,6 +18,7 @@ struct  _SUiContextPrivate
 
 
     SStyle  style_title;
+    SStyle  style_game_scores;
 
 
     TSCurrentGame   currentGame;
@@ -41,6 +42,11 @@ void    ui_surfaceFill( SDL_Surface* argSurfacePtr, const SDL_Color argColor );
 void    ui_sdl_apply_surface( int x, int y,
                               SDL_Surface* source, SDL_Surface* destination,
                               SDL_Rect* clip );
+
+
+void    ui_transitionIn( SDL_Surface* argOld,
+                         SDL_Surface* argNew,
+                         SDL_Surface* argDest );
 
 void    ui_transition( SDL_Surface* argOld,
                        SDL_Surface* argNew,

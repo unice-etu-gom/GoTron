@@ -6,6 +6,7 @@
 #include <SDL/SDL.h>
 #include <SDL_ttf.h>
 
+#include "core/input.h"
 #include "core/macros.h"
 
 #include "ui_menus.h"
@@ -85,9 +86,18 @@ int ui_construct(TContext *argContextPtr)
         TRACE_ERR( "An error occured while creating TTF style 'title' !" );
         retVal  = EXIT_FAILURE;
     }
+    else if( ui_style_create( &(p_context->style_game_scores),
+                                  C_FONT_CONST1,
+                                  20,
+                                  C_SDL_COLOR_PINK ) )
+    {
+        TRACE_ERR("An error occured while creating TTF style 'game_scores' !");
+        retVal  = EXIT_FAILURE;
+    }
     else
     {
-        TRACE_DBG( "UI init success." )
+        input_init();
+        TRACE_DBG( "UI init success." );
     }
 
 
@@ -109,6 +119,7 @@ int ui_destruct(TContext *argContext)
     }
     else
     {
+        ui_style_delete( &(argContext->ui->style_game_scores) );
         ui_style_delete( &(argContext->ui->style_title) );
 
         TTF_Quit();

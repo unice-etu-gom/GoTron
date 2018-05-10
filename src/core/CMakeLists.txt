@@ -5,6 +5,7 @@ set ( CORE_SRC
 
     macros.h
     TBool.h
+    TPosition2D.h
 
     log/log.h
 )

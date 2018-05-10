@@ -36,8 +36,8 @@ SDL_Color   C_SDL_COLOR_BLUE    = {   0,      0,    255 };
 SDL_Color   C_SDL_COLOR_PINK    = { 255,      0,    255 };
 
 
-const char* C_FONT_TRON        = "Tr2n.ttf";
-//const char* C_FONT_TITLE        = "TRON.TTF";
+const char* C_FONT_CONST1       = "MAKISUPA.TTF";
+const char* C_FONT_TRON         = "Tr2n.ttf";
 
 /* ########################################################################## */
 /* ########################################################################## */

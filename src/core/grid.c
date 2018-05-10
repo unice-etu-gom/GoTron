@@ -125,7 +125,8 @@ size_t  grid_columnsCount(TCoreGrid argGrid)
 
 TCoreGrid   grid_create(size_t argCols, size_t argRows)
 {
-    TCoreGrid   retVal  = (TCoreGrid)malloc( sizeof( struct _SCoreGrid ) );
+    struct _SCoreGrid* retVal
+            = (struct _SCoreGrid*)malloc( sizeof( struct _SCoreGrid ) );
 
 
     /* Initialize struct's "simple" members */

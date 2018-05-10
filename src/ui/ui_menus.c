@@ -117,7 +117,7 @@ int     ui_menu_main(TContext *argContextPtr)
             return EXIT_FAILURE;
         }
 
-        SDL_Delay( 5 );
+//        SDL_Delay( 5 );
     }
 
 
@@ -147,13 +147,13 @@ int     ui_menu_main(TContext *argContextPtr)
             return EXIT_FAILURE;
         }
 
-        SDL_Delay( 5 );
+//        SDL_Delay( 5 );
     }
 
 
 
     /* -------------------------------------------------------------------------
-     *  Execution de la boucle de gestion des evenements
+     *  Partie 3 : Execution de la boucle de gestion des evenements
      */
     SDL_Event   lSdlEvent;
     TBool       lFlagQuit   = FALSE;

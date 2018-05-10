@@ -65,9 +65,11 @@ TUiText ui_text_create(const char* argText, SStyle argStyle)
     TUiText retVal  = (TUiText)malloc( sizeof(struct _SUiTextPrivate) );
 
 
-    retVal->alpha       = 0xFF;
+    retVal->posX        = 0;
+    retVal->posY        = 0;
     retVal->alignH      = EUiTextAlignLeft;
     retVal->alignV      = EUiTextAlignBottom;
+    retVal->alpha       = 0xFF;
     retVal->sdl_surface = 0;
 
 
@@ -146,6 +148,17 @@ SDL_Rect    ui_text_getRect(TUiText argUiText)
 
 
     return retVal;
+}
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+void    ui_text_set(TUiText argUiText, const char *argNewText)
+{
+    FREE( argUiText->text );
+    argUiText->text = strdup( argNewText );
+
+    s_updateSurface( argUiText );
 }
 
 /* ########################################################################## */
