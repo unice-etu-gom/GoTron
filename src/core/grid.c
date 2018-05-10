@@ -8,6 +8,8 @@
 #   include <stdio.h>
 #endif
 
+#include "core/macros.h"
+
 /* ########################################################################## */
 /* ########################################################################## */
 
@@ -107,16 +109,23 @@ TCoreGrid   grid_create(size_t argCols, size_t argRows)
     TCoreGrid   retVal  = (TCoreGrid)malloc( sizeof( struct _SCoreGrid ) );
 
 
+    /* Initialize struct's "simple" members */
     retVal->columsCount = argCols;
     retVal->rowsCount   = argRows;
+    retVal->data        = NULL;
 
-    int lCellsCount = retVal->columsCount * retVal->rowsCount;
+
+    /* Allocate memory for the grid data depending on the grid size */
+    size_t lCellsCount  = retVal->columsCount * retVal->rowsCount;
 
     retVal->data    = (TEGridCellType*)malloc(      sizeof( TEGridCellType )
                                                 *   lCellsCount );
 
-    memset(retVal->data, EGridCellEmpty, lCellsCount);
-
+    /* Initialize grid content to the default value */
+    for( size_t i = 0 ; i < lCellsCount ; ++i )
+    {
+        retVal->data[ i ]   = EGridCellEmpty;
+    }
 
 
     /*
@@ -145,10 +154,10 @@ TCoreGrid   grid_create(size_t argCols, size_t argRows)
 /* ########################################################################## */
 /* ########################################################################## */
 
-void    grid_destroy(TCoreGrid argGrid)
+void    grid_destroy( TCoreGrid argGrid )
 {
-    free( argGrid->data );
-    free( (struct _SCoreGrid*)argGrid );
+    FREE( (argGrid->data) );
+    FREE( argGrid );
 }
 
 /* ########################################################################## */
