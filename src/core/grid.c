@@ -128,26 +128,6 @@ TCoreGrid   grid_create(size_t argCols, size_t argRows)
     }
 
 
-    /*
-     *  Create the borders
-     */
-    for(    size_t lRowNbr = 0
-        ;   lRowNbr < argRows
-        ;   ++lRowNbr )
-    {
-        grid_setCell( retVal, lRowNbr, 0,           EGridCellWall );
-        grid_setCell( retVal, lRowNbr, argCols - 1, EGridCellWall );
-    }
-
-    for(    size_t lColNbr = 0
-        ;   lColNbr < argCols
-        ;   ++lColNbr )
-    {
-        grid_setCell( retVal, 0,            lColNbr,    EGridCellWall );
-        grid_setCell( retVal, argRows - 1,  lColNbr,    EGridCellWall );
-    }
-
-
     return retVal;
 }
 
