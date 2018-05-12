@@ -29,7 +29,8 @@ static void getIn( TContext argContext )
      */
     argContext.ui->currentGame
             = ui_game_create( argContext.ui->screen,
-                              argContext.ui->style_game_scores );
+                              argContext.ui->style_game_scores,
+                              EGameModePvP );
 
 
 
@@ -148,7 +149,6 @@ static void s_ui_mode_pvp_readKeyboardInputs(TSCurrentGame argGame)
 
 
             case    SDLK_DOWN:
-                TRACE_DBG( "Player 2 direction : Down" );
                 if( argGame->player2Direction != EPlayerDirectionUp )
                 {
                     argGame->player2Direction   = EPlayerDirectionDown;

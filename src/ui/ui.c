@@ -89,7 +89,7 @@ int ui_construct(TContext *argContextPtr)
     else if( ui_style_create( &(p_context->style_game_scores),
                                   C_FONT_CONST1,
                                   20,
-                                  C_SDL_COLOR_PINK ) )
+                                  C_SDL_COLOR_YELLOW ) )
     {
         TRACE_ERR("An error occured while creating TTF style 'game_scores' !");
         retVal  = EXIT_FAILURE;

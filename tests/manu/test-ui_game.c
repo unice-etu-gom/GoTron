@@ -51,7 +51,8 @@ static void test_transition(SDL_Surface* argScreenSurfacePtr)
      * of a "complex" surface.
      */
     TSCurrentGame lGame = ui_game_create( argScreenSurfacePtr,
-                                          lStyle );
+                                          lStyle,
+                                          EGameModePvP );
 
     /* The game grid is blitted to a new surface */
     SDL_Surface* p_surf_new

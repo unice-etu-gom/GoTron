@@ -5,6 +5,7 @@
 
 #include "core/input.h"
 #include "core/macros.h"
+#include "core/TBool.h"
 
 #include "ui_private.h"
 
@@ -147,7 +148,8 @@ static TPosition2D  s_movePlayer( TPosition2D       argCurrentPos,
 /* ########################################################################## */
 
 TSCurrentGame   ui_game_create(SDL_Surface* argScreenSurfacePtr,
-                               SStyle       argStyleScore )
+                               SStyle       argStyleScore,
+                               TEGameMode   argMode )
 {
     TSCurrentGame   retVal
             = (TSCurrentGame)malloc( sizeof( struct SCurrentGame ) );
@@ -167,6 +169,7 @@ TSCurrentGame   ui_game_create(SDL_Surface* argScreenSurfacePtr,
     TRACE_DBG( "lGameHeight = %d", lGameHeight );
 
 
+    retVal->mode            = argMode;
     retVal->player1Color    = C_SDL_COLOR_YELLOW;
     retVal->player2Color    = C_SDL_COLOR_GREEN;
 
@@ -343,13 +346,25 @@ void    ui_game_blit(   TSCurrentGame   argGame,
                      argDestSurfacePtr,
                      &lOffset );
 
-    SDL_BlitSurface( argGame->sdl_surf_player2Bike,
-                     NULL,
-                     argDestSurfacePtr,
-                     &lOffset );
+
+    if( argFlags & UI_GAME_FLAG_LAYER_TRACE_P2 )
+    {
+        SDL_BlitSurface( argGame->sdl_surf_player2Bike,
+                         NULL,
+                         argDestSurfacePtr,
+                         &lOffset );
+    }
+
 
     ui_text_blit( argGame->P1ScoreText, argDestSurfacePtr );
-    ui_text_blit( argGame->P2ScoreText, argDestSurfacePtr );
+
+
+
+
+    if( argFlags & UI_GAME_FLAG_LAYER_TRACE_P2 )
+    {
+        ui_text_blit( argGame->P2ScoreText, argDestSurfacePtr );
+    }
 }
 
 /* ########################################################################## */
@@ -525,30 +540,43 @@ void    ui_game_displayFinalScore( TSCurrentGame    argGame,
 
 uint    ui_game_movePlayers(TSCurrentGame argGame)
 {
-    uint    retVal  = UI_GAME_FLAGS_NONE;
+    TPosition2D lPlayer1NewPos      = {0};
+    int         lPlayer1NewPosOK    = EXIT_SUCCESS;
+    TPosition2D lPlayer2NewPos      = {0};
+    int         lPlayer2NewPosOK    = EXIT_SUCCESS;
+    uint        retVal              = UI_GAME_FLAGS_NONE;
+
+    TBool   lP2Enabled
+            =   (argGame->mode != EGameModeSurvie)
+            ?   TRUE
+            :   FALSE;
 
 
     /*
      *  Move players
      */
-    TPosition2D lPlayer1NewPos
+    lPlayer1NewPos
             = s_movePlayer( argGame->player1Pos,
                             argGame->player1Direction );
 
-    int lPlayer1NewPosOK
+    lPlayer1NewPosOK
             = ui_game_setPlayer1Position( argGame,
                                           lPlayer1NewPos.x,
                                           lPlayer1NewPos.y );
 
 
-    TPosition2D lPlayer2NewPos
-            = s_movePlayer( argGame->player2Pos,
-                            argGame->player2Direction );
 
-    int lPlayer2NewPosOK
-            = ui_game_setPlayer2Position( argGame,
-                                          lPlayer2NewPos.x,
-                                          lPlayer2NewPos.y );
+    if( lP2Enabled )
+    {
+        lPlayer2NewPos
+                = s_movePlayer( argGame->player2Pos,
+                                argGame->player2Direction );
+
+        lPlayer2NewPosOK
+                = ui_game_setPlayer2Position( argGame,
+                                              lPlayer2NewPos.x,
+                                              lPlayer2NewPos.y );
+    }
 
 
 
@@ -561,7 +589,8 @@ uint    ui_game_movePlayers(TSCurrentGame argGame)
         retVal  |= UI_GAME_FLAG_P1;
     }
 
-    if( lPlayer2NewPosOK != EXIT_SUCCESS )
+    if(     lP2Enabled
+        &&  (lPlayer2NewPosOK != EXIT_SUCCESS) )
     {
         TRACE_DBG( "Collision detection for player 2 !" );
         retVal  |= UI_GAME_FLAG_P2;
@@ -573,7 +602,8 @@ uint    ui_game_movePlayers(TSCurrentGame argGame)
     /* Taken from :
      * https://developer.mozilla.org/fr/docs/Games/Techniques/2D_collision_detection
      */
-    if(     lPlayer1NewPos.x < lPlayer2NewPos.x + C_UI_GAME_TRACE_THICKNESS
+    if(     lP2Enabled
+        &&  lPlayer1NewPos.x < lPlayer2NewPos.x + C_UI_GAME_TRACE_THICKNESS
         &&  lPlayer1NewPos.x + C_UI_GAME_TRACE_THICKNESS > lPlayer2NewPos.x
         &&  lPlayer1NewPos.y < lPlayer2NewPos.y + C_UI_GAME_TRACE_THICKNESS
         &&  lPlayer1NewPos.y + C_UI_GAME_TRACE_THICKNESS > lPlayer2NewPos.y )
@@ -593,7 +623,8 @@ uint    ui_game_movePlayers(TSCurrentGame argGame)
                           argGame->scorePlayer1 + argGame->scoreIncrement );
     }
 
-    if( (retVal & UI_GAME_FLAG_P2) == 0 )
+    if(     lP2Enabled
+        &&  (retVal & UI_GAME_FLAG_P2) == 0 )
     {
         ui_game_setScore( argGame, EPlayerID2,
                           argGame->scorePlayer2 + argGame->scoreIncrement );

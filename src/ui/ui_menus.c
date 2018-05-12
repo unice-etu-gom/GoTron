@@ -5,6 +5,7 @@
 #include "core/TContext.h"
 
 #include "ui_mode_pvp.h"
+#include "ui_mode_survival.h"
 #include "ui_private.h"
 #include "ui_styles.h"
 #include "ui_text.h"
@@ -45,7 +46,7 @@ int     ui_menu_main(TContext *argContextPtr)
     TUiText txtTitle    = ui_text_create( "Go_Tron",
                                           p_contextUi->style_title );
 
-    TUiText txtArcade   = ui_text_create( "Arcade",
+    TUiText txtSurvival = ui_text_create( "Survival",
                                           lStyleItemDefault );
 
     TUiText txtPvAI     = ui_text_create( "Player Vs AI",
@@ -71,16 +72,16 @@ int     ui_menu_main(TContext *argContextPtr)
                     ui_text_getRect(txtTitle).h );
 
 
-    ui_text_setAlign( txtArcade, EUiTextAlignCenter, EUiTextAlignMiddle );
-    ui_text_setPos( txtArcade,
+    ui_text_setAlign( txtSurvival, EUiTextAlignCenter, EUiTextAlignMiddle );
+    ui_text_setPos( txtSurvival,
                     C_SCREEN_WIDTH / 2,
                     C_SCREEN_HEIGHT / 2 );
 
     ui_text_setAlign( txtPvAI, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtPvAI,
                     C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtArcade ).y
-                    + ui_text_getRect( txtArcade ).h * 2 );
+                    ui_text_getRect( txtSurvival ).y
+                    + ui_text_getRect( txtSurvival ).h * 2 );
 
     ui_text_setAlign( txtPvP, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtPvP,
@@ -126,7 +127,7 @@ int     ui_menu_main(TContext *argContextPtr)
      */
     for( uint lAlpha = 0U ; lAlpha <= 255U ; ++lAlpha )
     {
-        ui_text_setAlpha( txtArcade,    lAlpha );
+        ui_text_setAlpha( txtSurvival,  lAlpha );
         ui_text_setAlpha( txtExit,      lAlpha );
         ui_text_setAlpha( txtPvAI,      lAlpha );
         ui_text_setAlpha( txtPvP,       lAlpha );
@@ -135,7 +136,7 @@ int     ui_menu_main(TContext *argContextPtr)
         ui_surfaceFill( p_contextUi->screen,
                          argContextPtr->ui->screenBackgroundColor );
 
-        ui_text_blit( txtArcade,    p_contextUi->screen );
+        ui_text_blit( txtSurvival,  p_contextUi->screen );
         ui_text_blit( txtExit,      p_contextUi->screen );
         ui_text_blit( txtPvAI,      p_contextUi->screen );
         ui_text_blit( txtPvP,       p_contextUi->screen );
@@ -160,14 +161,14 @@ int     ui_menu_main(TContext *argContextPtr)
 
     enum EMenuItems
     {
-        EMenuItemArcade = 0,
+        EMenuItemSurvival = 0,
         EMenuItemPvAI,
         EMenuItemPvP,
         EMenuItemExit,
 
         EMenuItemsCount
     };
-    int     lCurrentChoice  = EMenuItemArcade;
+    int     lCurrentChoice  = EMenuItemSurvival;
     TBool   lFlagChoiceOK   = FALSE;
 
 
@@ -230,10 +231,31 @@ int     ui_menu_main(TContext *argContextPtr)
             lFlagChoiceOK   = FALSE;
             switch( lCurrentChoice )
             {
-#if 0
-                case EMenuItemArcade:
+                case    EMenuItemSurvival:
+                {
+                    /* Backup affichage menu */
+                    SDL_Surface* p_surfMenuOld
+                            = SDL_CreateRGBSurface( 0,
+                                                    p_contextUi->screen->w,
+                                                    p_contextUi->screen->h,
+                                                    32,
+                                                    0, 0, 0, 0 );
+                    SDL_BlitSurface( p_contextUi->screen,
+                                     NULL,
+                                     p_surfMenuOld,
+                                     NULL );
+
+                    /* Execution mode PvP */
+                    ui_mode_survival_exec( *argContextPtr );
+
+                    /* Restauration affichage menu */
+                    ui_transition( p_contextUi->screen,
+                                   p_surfMenuOld,
+                                   p_contextUi->screen );
+                    SDL_FreeSurface( p_surfMenuOld );
+                }
                     break;
-#endif
+
 
                 case EMenuItemExit:
                     lFlagQuit   = TRUE;
@@ -291,15 +313,15 @@ int     ui_menu_main(TContext *argContextPtr)
         /* ---------------------------------------------------------------------
          *  Manage display
          */
-        ui_text_setStyle( txtArcade,    lStyleItemDefault );
+        ui_text_setStyle( txtSurvival,  lStyleItemDefault );
         ui_text_setStyle( txtExit,      lStyleItemDefault );
         ui_text_setStyle( txtPvAI,      lStyleItemDefault );
         ui_text_setStyle( txtPvP,       lStyleItemDefault );
 
         switch( lCurrentChoice )
         {
-            case EMenuItemArcade:
-                ui_text_setStyle( txtArcade, lStyleItemHovered );
+            case EMenuItemSurvival:
+                ui_text_setStyle( txtSurvival, lStyleItemHovered );
                 break;
 
 
@@ -328,7 +350,7 @@ int     ui_menu_main(TContext *argContextPtr)
         ui_surfaceFill( p_contextUi->screen,
                          argContextPtr->ui->screenBackgroundColor );
 
-        ui_text_blit( txtArcade,    p_contextUi->screen );
+        ui_text_blit( txtSurvival,  p_contextUi->screen );
         ui_text_blit( txtExit,      p_contextUi->screen );
         ui_text_blit( txtPvAI,      p_contextUi->screen );
         ui_text_blit( txtPvP,       p_contextUi->screen );
@@ -348,7 +370,7 @@ int     ui_menu_main(TContext *argContextPtr)
     /* -------------------------------------------------------------------------
      *  Nettoyage des pointeurs locaux
      */
-    ui_text_delete( &txtArcade );
+    ui_text_delete( &txtSurvival );
     ui_text_delete( &txtExit );
     ui_text_delete( &txtPvAI );
     ui_text_delete( &txtPvP );

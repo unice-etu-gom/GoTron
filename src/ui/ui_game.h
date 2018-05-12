@@ -9,6 +9,13 @@
 #include "ui_text.h"
 
 
+typedef enum    EGameModes
+{
+    EGameModeSurvie = 0,
+    EGameModePvP,
+    EGameModePvAI
+}   TEGameMode;
+
 typedef enum    EPlayersID
 {
     EPlayerID1  = 1,
@@ -25,6 +32,7 @@ typedef enum    EPlayerDirections
 
 struct  SCurrentGame
 {
+    TEGameMode  mode;
     /*
      *  Data management
      */
@@ -80,7 +88,8 @@ const Uint32    C_UI_GAME_TRACE_THICKNESS;
 
 
 TSCurrentGame   ui_game_create( SDL_Surface *argScreenSurfacePtr,
-                                SStyle argStyleScore );
+                                SStyle      argStyleScore,
+                                TEGameMode  argMode );
 void            ui_game_destroy( TSCurrentGame* argGamePtr );
 
 

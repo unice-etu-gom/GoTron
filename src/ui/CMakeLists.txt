@@ -8,6 +8,8 @@ set ( UI_SRC
     ui_menus.h
     ui_mode_pvp.c
     ui_mode_pvp.h
+    ui_mode_survival.c
+    ui_mode_survival.h
     ui_private.c
     ui_private.h
     ui_styles.c
