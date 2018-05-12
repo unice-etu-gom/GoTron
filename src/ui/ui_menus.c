@@ -246,7 +246,28 @@ int     ui_menu_main(TContext *argContextPtr)
 
 
                 case    EMenuItemPvP:
+                {
+                    /* Backup affichage menu */
+                    SDL_Surface* p_surfMenuOld
+                            = SDL_CreateRGBSurface( 0,
+                                                    p_contextUi->screen->w,
+                                                    p_contextUi->screen->h,
+                                                    32,
+                                                    0, 0, 0, 0 );
+                    SDL_BlitSurface( p_contextUi->screen,
+                                     NULL,
+                                     p_surfMenuOld,
+                                     NULL );
+
+                    /* Execution mode PvP */
                     ui_mode_pvp_exec( *argContextPtr );
+
+                    /* Restauration affichage menu */
+                    ui_transition( p_contextUi->screen,
+                                   p_surfMenuOld,
+                                   p_contextUi->screen );
+                    SDL_FreeSurface( p_surfMenuOld );
+                }
                     break;
 
 
