@@ -77,7 +77,7 @@ static void getIn( TContext argContext )
 
 
     /* Flush events buffer */
-    while( input_keyboardEvent_poll() != SDLK_UNKNOWN );
+    input_flushPendingEvents();
 }
 
 /* ########################################################################## */
@@ -280,7 +280,7 @@ void    s_ui_mode_pvp_displayFinalScore( TSCurrentGame  argGame,
 
 
     /* Flush events buffer */
-    while( input_keyboardEvent_poll() != SDLK_UNKNOWN );
+    input_flushPendingEvents();
 
     /* Wait for a key press */
     while( (lKey=input_keyboardEvent_poll()) == SDLK_UNKNOWN )

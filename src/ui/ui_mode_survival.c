@@ -77,7 +77,7 @@ static void getIn( TContext argContext )
 
 
     /* Flush events buffer */
-    while( input_keyboardEvent_poll() != SDLK_UNKNOWN );
+    input_flushPendingEvents();
 }
 
 /* ########################################################################## */
@@ -157,7 +157,7 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
 
 
     /* Flush events buffer */
-    while( input_keyboardEvent_poll() != SDLK_UNKNOWN );
+    input_flushPendingEvents();
 
     int lWidth  =   c_marginSize * 2
                     + ui_text_getRect( lTitleText ).w

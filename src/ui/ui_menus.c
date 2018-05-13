@@ -1,5 +1,6 @@
 #include "ui_menus.h"
 
+#include "core/input.h"
 #include "core/macros.h"
 #include "core/TBool.h"
 #include "core/TContext.h"
@@ -171,6 +172,8 @@ int     ui_menu_main(TContext *argContextPtr)
     int     lCurrentChoice  = EMenuItemSurvival;
     TBool   lFlagChoiceOK   = FALSE;
 
+
+    input_flushPendingEvents();
 
     do
     {

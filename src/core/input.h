@@ -9,6 +9,8 @@ void    input_init(void);
 
 SDLKey  input_keyboardEvent_poll(void);
 
+void    input_flushPendingEvents(void);
+
 void    input_printKeyInfo( SDL_KeyboardEvent *key );
 void    input_printModifiers( SDLMod mod );
 
