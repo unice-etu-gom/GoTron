@@ -110,8 +110,6 @@ void    ui_game_blit( TSCurrentGame argGame,
                       SDL_Surface*  argDestSurfacePtr,
                       uint          argFlags );
 
-void    ui_game_displayFinalScore( TSCurrentGame    argGame,
-                                   SDL_Surface*     argSurfDestPtr );
 
 
 #endif  /*< UI_GAME_H */

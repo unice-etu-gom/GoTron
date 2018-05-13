@@ -1,5 +1,7 @@
 #include "ui_mode_pvp.h"
 
+#include <assert.h>
+
 #include <SDL.h>
 
 #include "core/input.h"
@@ -18,6 +20,12 @@
 
 #define TRACE_ERR(format,...) \
         TRACE_ERR_BASE( "ui", format, ##__VA_ARGS__ );
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+static void s_ui_mode_pvp_displayFinalScore( TSCurrentGame  argGame,
+                                             SDL_Surface*   argSurfDestPtr );
 
 /* ########################################################################## */
 /* ########################################################################## */
@@ -78,6 +86,210 @@ static void getIn( TContext argContext )
 static void getOut( TContext argContext )
 {
     ui_game_destroy( &(argContext.ui->currentGame) );
+}
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+void    s_ui_mode_pvp_displayFinalScore( TSCurrentGame  argGame,
+                                         SDL_Surface*   argSurfDestPtr )
+{
+    assert( argGame != NULL         && "argGame must be valid !" );
+    assert( argSurfDestPtr != NULL  && "argSurfDestPtr must be valid !" );
+
+
+    const int       c_marginSize        = 5;
+
+    SDL_Color       lBackgroundColor    = C_SDL_COLOR_WHITE;
+    SDLKey          lKey                = SDLK_UNKNOWN;
+    SDL_Rect        lOffset             = {0};
+    SStyle          lTextStyle          = NULL;
+    TUiText         lTextScoreP1        = NULL;
+    TUiText         lTextScoreP2        = NULL;
+    TUiText         lTextPressAnyKey           = NULL;
+    SStyle          lTitleStyle         = NULL;
+    TUiText         lTitleText          = NULL;
+    SDL_Surface*    p_sdlSurf_newScreen = NULL;
+    SDL_Surface*    p_sdlSurf_oldScreen = NULL;
+    SDL_Surface*    p_sdlSurf_result    = NULL;
+
+
+    p_sdlSurf_oldScreen
+            = SDL_CreateRGBSurface( 0,
+                                    argSurfDestPtr->w,
+                                    argSurfDestPtr->h,
+                                    32,
+                                    0, 0, 0, 0 );
+    ui_surfaceFill( p_sdlSurf_oldScreen, C_SDL_COLOR_BLACK );
+    SDL_BlitSurface( argSurfDestPtr, NULL,
+                     p_sdlSurf_oldScreen, NULL );
+
+
+    p_sdlSurf_newScreen
+            = SDL_CreateRGBSurface( 0,
+                                    argSurfDestPtr->w,
+                                    argSurfDestPtr->h,
+                                    32,
+                                    0, 0, 0, 0 );
+
+
+
+    ui_style_create( &lTitleStyle, C_FONT_CONST1, 40, C_SDL_COLOR_BLACK );
+    ui_style_create( &lTextStyle, C_FONT_CONST1, 16, C_SDL_COLOR_BLACK );
+
+
+
+    char    lStrBuffer[80]  = {0};
+
+
+    lTitleText  = ui_text_create( "text", lTitleStyle );
+
+    snprintf( lStrBuffer, 80,
+              "Player 1 : %06d",
+              argGame->scorePlayer1 );
+    lTextScoreP1    = ui_text_create( lStrBuffer, lTextStyle );
+
+    snprintf( lStrBuffer, 80,
+              "Player 2 : %06d",
+              argGame->scorePlayer2 );
+    lTextScoreP2    = ui_text_create( lStrBuffer, lTextStyle );
+
+    lTextPressAnyKey    = ui_text_create( "<Press any key to continue>",
+                                          lTextStyle );
+
+
+    ui_text_setAlign( lTitleText, EUiTextAlignMiddle, EUiTextAlignBottom );
+    ui_text_setAlign( lTextScoreP1, EUiTextAlignMiddle, EUiTextAlignBottom );
+    ui_text_setAlign( lTextScoreP2, EUiTextAlignMiddle, EUiTextAlignBottom );
+    ui_text_setAlign( lTextPressAnyKey, EUiTextAlignMiddle, EUiTextAlignBottom);
+
+
+
+    /*
+     *  Conditional formatting
+     */
+    if(     argGame->scorePlayer1
+        >   argGame->scorePlayer2 )
+    {
+        ui_text_set( lTitleText, "Player 1 won the game !" );
+        lBackgroundColor    = argGame->player1Color;
+    }
+    else if(    argGame->scorePlayer1
+            <   argGame->scorePlayer2 )
+    {
+        ui_text_set( lTitleText, "Player 2 won the game !" );
+        lBackgroundColor    = argGame->player2Color;
+    }
+    else
+    {
+        ui_text_set( lTitleText, "YOU BOTH ARE LOOOSEEERS !!!" );
+        lBackgroundColor    = C_SDL_COLOR_RED;
+    }
+    ui_surfaceFill( p_sdlSurf_newScreen, lBackgroundColor );
+
+
+
+
+    int lWidth  =   c_marginSize * 2
+                    + ui_text_getRect( lTitleText ).w
+                    + c_marginSize * 2;
+    int lHeight =   c_marginSize
+                    + ui_text_getRect( lTitleText ).h
+                    + c_marginSize
+                    + ui_text_getRect( lTextScoreP1 ).h
+                    + c_marginSize
+                    + ui_text_getRect( lTextScoreP2 ).h
+                    + c_marginSize
+                    + ui_text_getRect( lTextPressAnyKey).h
+                    + c_marginSize;
+
+    p_sdlSurf_result
+            = SDL_CreateRGBSurface( 0,
+                                    lWidth,
+                                    lHeight,
+                                    32,
+                                    0, 0, 0, 0 );
+    ui_surfaceFill( p_sdlSurf_result, lBackgroundColor );
+    lOffset.x   = c_marginSize;
+    lOffset.y   = c_marginSize;
+    lOffset.w   = p_sdlSurf_result->w - (c_marginSize * 2);
+    lOffset.h   = p_sdlSurf_result->h - (c_marginSize * 2);
+    SDL_FillRect( p_sdlSurf_result,
+                  &lOffset,
+                  SDL_MapRGB( p_sdlSurf_result->format,
+                              C_SDL_COLOR_WHITE.r,
+                              C_SDL_COLOR_WHITE.g,
+                              C_SDL_COLOR_WHITE.b ) );
+
+
+    int lPosX   = p_sdlSurf_result->w / 2;
+    int lPosY   = c_marginSize;
+    ui_text_setPos( lTitleText,
+                    lPosX,
+                    lPosY );
+
+
+    lPosY   +=  ui_text_getRect( lTitleText ).h
+            +   c_marginSize;
+    ui_text_setPos( lTextScoreP1,
+                    lPosX,
+                    lPosY );
+
+
+    lPosY   +=  ui_text_getRect( lTextScoreP1 ).h
+            +   c_marginSize;
+    ui_text_setPos( lTextScoreP2,
+                    lPosX,
+                    lPosY );
+
+
+    lPosY   +=  ui_text_getRect( lTextScoreP2 ).h
+            +   c_marginSize;
+    ui_text_setPos( lTextPressAnyKey,
+                    lPosX,
+                    lPosY );
+
+
+    ui_text_blit( lTextScoreP1, p_sdlSurf_result );
+    ui_text_blit( lTextScoreP2, p_sdlSurf_result );
+    ui_text_blit( lTitleText,   p_sdlSurf_result );
+
+
+    lOffset.x   = (argSurfDestPtr->w - p_sdlSurf_result->w ) / 2;
+    lOffset.y   = (argSurfDestPtr->h - p_sdlSurf_result->h ) / 2;
+    lOffset.w   = 0;
+    lOffset.h   = 0;
+
+
+
+    SDL_BlitSurface( p_sdlSurf_result, NULL,
+                     p_sdlSurf_newScreen, &lOffset );
+
+
+
+    ui_transitionIn( p_sdlSurf_oldScreen,
+                     p_sdlSurf_newScreen,
+                     argSurfDestPtr );
+
+
+
+    ui_text_blit( lTextPressAnyKey, p_sdlSurf_result );
+    SDL_BlitSurface( p_sdlSurf_result, NULL,
+                     argSurfDestPtr, &lOffset );
+    SDL_Flip( argSurfDestPtr );
+
+
+    /* Flush events buffer */
+    while( input_keyboardEvent_poll() != SDLK_UNKNOWN );
+
+    /* Wait for a key press */
+    while( (lKey=input_keyboardEvent_poll()) == SDLK_UNKNOWN )
+    {
+        SDL_Delay( 20 );
+    }
+
+
+    SDL_FreeSurface( p_sdlSurf_result );
 }
 
 /* ########################################################################## */
@@ -244,8 +456,8 @@ int ui_mode_pvp_exec(TContext argContext)
     /*
      *  Display the score
      */
-    ui_game_displayFinalScore( argContext.ui->currentGame,
-                               argContext.ui->screen );
+    s_ui_mode_pvp_displayFinalScore( argContext.ui->currentGame,
+                                     argContext.ui->screen );
 
 
     getOut( argContext );
