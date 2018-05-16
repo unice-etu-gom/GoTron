@@ -1,15 +1,12 @@
 #ifndef UI_H
 #define UI_H
 
-typedef struct _SUiContextPrivate*  TUiContext;
+#include "core/TContext.h"
 
 
-int ui_construct(TUiContext* argContextPtr);
-int ui_destruct(TUiContext* argContextPtr);
+int ui_construct(TContext* argContextPtr);
+int ui_destruct(TContext* argContextPtr);
 
-int ui_exec(TUiContext* argContext);
-
-
-void    ui_screenClear( TUiContext argContext );
+int ui_exec(TContext* argContext);
 
 #endif  /*< UI_H */

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "core/TContext.h"
 #include "ui/ui.h"
 
 /* ########################################################################## */
@@ -24,20 +25,20 @@ int     main(void)
 
     printf( "Hello, world !\n" );
 
-    TUiContext  lUiContext  = NULL;
+    TContext    lContext    = {0};
 
 
-    if( ui_construct(&lUiContext) != EXIT_SUCCESS )
+    if( ui_construct(&lContext) != EXIT_SUCCESS )
     {
         TRACE_ERR( "Error while constructing UI !" );
         retVal  = EXIT_FAILURE;
     }
-    else if( ui_exec( &lUiContext ) != EXIT_SUCCESS )
+    else if( ui_exec( &lContext ) != EXIT_SUCCESS )
     {
         TRACE_ERR( "Error while executing UI !" );
         retVal  = EXIT_FAILURE;
     }
-    else if( ui_destruct(&lUiContext) != EXIT_SUCCESS )
+    else if( ui_destruct(&lContext) != EXIT_SUCCESS )
     {
         TRACE_ERR( "Error while destructing UI !" );
         retVal  = EXIT_FAILURE;

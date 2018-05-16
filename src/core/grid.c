@@ -8,10 +8,26 @@
 #   include <stdio.h>
 #endif
 
+#include "core/macros.h"
+
 /* ########################################################################## */
 /* ########################################################################## */
 
-#define C_CHAR_CELLTYPE_EMPTY   (' ')
+#include "core/log/log.h"
+
+#define TRACE_DBG(format,...) \
+        TRACE_DBG_BASE( "core", format, ##__VA_ARGS__ );
+
+#define TRACE_ERR(format,...) \
+        TRACE_ERR_BASE( "core", format, ##__VA_ARGS__ );
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+#define C_CHAR_CELLTYPE_EMPTY   ('e')
+#define C_CHAR_CELLTYPE_PLAYER1 ('1')
+#define C_CHAR_CELLTYPE_PLAYER2 ('2')
+#define C_CHAR_CELLTYPE_UNKNOWN ('u')
 #define C_CHAR_CELLTYPE_WALL    ('W')
 
 /* ########################################################################## */
@@ -67,12 +83,29 @@ char grid_cellType_toChar(const TEGridCellType argType)
             break;
 
 
+        case    EGridCellPlayer1:
+            retVal  = C_CHAR_CELLTYPE_PLAYER1;
+            break;
+
+
+        case    EGridCellPlayer2:
+            retVal  = C_CHAR_CELLTYPE_PLAYER2;
+            break;
+
+
+        case    EGridCellUnknown:
+            retVal  = C_CHAR_CELLTYPE_UNKNOWN;
+            break;
+
+
         case    EGridCellWall:
             retVal  = C_CHAR_CELLTYPE_WALL;
             break;
 
 
         default:
+            TRACE_ERR( "Unknown cell type with value %d !",
+                       argType );
             break;
     }
 
@@ -90,40 +123,28 @@ size_t  grid_columnsCount(TCoreGrid argGrid)
 /* ########################################################################## */
 /* ########################################################################## */
 
-TCoreGrid   grid_create(size_t argRows, size_t argCols)
+TCoreGrid   grid_create(size_t argCols, size_t argRows)
 {
-    TCoreGrid   retVal  = (TCoreGrid)malloc( sizeof( struct _SCoreGrid ) );
+    struct _SCoreGrid* retVal
+            = (struct _SCoreGrid*)malloc( sizeof( struct _SCoreGrid ) );
 
 
+    /* Initialize struct's "simple" members */
     retVal->columsCount = argCols;
     retVal->rowsCount   = argRows;
+    retVal->data        = NULL;
 
-    int lCellsCount = retVal->columsCount * retVal->rowsCount;
+
+    /* Allocate memory for the grid data depending on the grid size */
+    size_t lCellsCount  = retVal->columsCount * retVal->rowsCount;
 
     retVal->data    = (TEGridCellType*)malloc(      sizeof( TEGridCellType )
                                                 *   lCellsCount );
 
-    memset(retVal->data, EGridCellEmpty, lCellsCount);
-
-
-
-    /*
-     *  Create the borders
-     */
-    for(    size_t lRowNbr = 0
-        ;   lRowNbr < argRows
-        ;   ++lRowNbr )
+    /* Initialize grid content to the default value */
+    for( size_t i = 0 ; i < lCellsCount ; ++i )
     {
-        grid_setCell( retVal, lRowNbr, 0,           EGridCellWall );
-        grid_setCell( retVal, lRowNbr, argCols - 1, EGridCellWall );
-    }
-
-    for(    size_t lColNbr = 0
-        ;   lColNbr < argCols
-        ;   ++lColNbr )
-    {
-        grid_setCell( retVal, 0,            lColNbr,    EGridCellWall );
-        grid_setCell( retVal, argRows - 1,  lColNbr,    EGridCellWall );
+        retVal->data[ i ]   = EGridCellEmpty;
     }
 
 
@@ -133,10 +154,10 @@ TCoreGrid   grid_create(size_t argRows, size_t argCols)
 /* ########################################################################## */
 /* ########################################################################## */
 
-void    grid_destroy(TCoreGrid argGrid)
+void    grid_destroy( TCoreGrid argGrid )
 {
-    free( argGrid->data );
-    free( (struct _SCoreGrid*)argGrid );
+    FREE( (argGrid->data) );
+    FREE( argGrid );
 }
 
 /* ########################################################################## */

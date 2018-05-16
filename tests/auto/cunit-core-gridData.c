@@ -36,6 +36,7 @@ static  void    s_test_gridCreation(void)
         {
 //            TRACE_DBG( "Testing Row %lu - Col %lu",
 //                       lRow, lCol );
+#ifdef  D_GRID_CREATE_WITH_WALLS
             /* Si la cellule fait partie du contour, alors ce doit être un mur*/
             if(     lRow == 0
                 ||  lRow == C_GRID_ROWSCOUNT - 1
@@ -49,9 +50,12 @@ static  void    s_test_gridCreation(void)
              * vide. */
             else
             {
+#endif
                 CU_ASSERT_EQUAL_FATAL( grid_getCell( lGridData, lRow, lCol ),
                                        EGridCellEmpty );
+#ifdef  D_GRID_CREATE_WITH_WALLS
             }
+#endif
         }
     }
 

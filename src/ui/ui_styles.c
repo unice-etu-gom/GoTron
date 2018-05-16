@@ -25,17 +25,19 @@ struct  _SUiTTFStylePrivate
 /* ########################################################################## */
 
 SDL_Color   C_SDL_COLOR_BLACK   = {   0,      0,      0 };
+SDL_Color   C_SDL_COLOR_GREY50  = { 128,    128,    128 };
 SDL_Color   C_SDL_COLOR_WHITE   = { 255,    255,    255 };
 SDL_Color   C_SDL_COLOR_RED     = { 255,      0,      0 };
 SDL_Color   C_SDL_COLOR_YELLOW  = { 255,    255,      0 };
 SDL_Color   C_SDL_COLOR_GREEN   = {   0,    255,      0 };
 SDL_Color   C_SDL_COLOR_AQUA    = {   0,    255,    255 };
+SDL_Color   C_SDL_COLOR_AQUA50  = {   0,    128,    128 };
 SDL_Color   C_SDL_COLOR_BLUE    = {   0,      0,    255 };
 SDL_Color   C_SDL_COLOR_PINK    = { 255,      0,    255 };
 
 
-const char* C_FONT_TRON        = "Tr2n.ttf";
-//const char* C_FONT_TITLE        = "TRON.TTF";
+const char* C_FONT_CONST1       = "MAKISUPA.TTF";
+const char* C_FONT_TRON         = "Tr2n.ttf";
 
 /* ########################################################################## */
 /* ########################################################################## */

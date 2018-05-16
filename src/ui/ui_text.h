@@ -38,7 +38,6 @@ void        ui_text_setAlign( TUiText               argUiText,
                               const TEUiTextAlignH  argAlignH,
                               const TEUiTextAlignV  argAlignV );
 
-
 void        ui_text_setPos( TUiText argUiText, Sint16 argPosX, Sint16 argPosY );
 
 SDL_Rect    ui_text_getRect( TUiText argUiText );
@@ -46,6 +45,9 @@ SDL_Rect    ui_text_getRect( TUiText argUiText );
 void        ui_text_setAlpha( TUiText argUiText, uint8_t argAlpha );
 
 void        ui_text_setStyle( TUiText argUiText, SStyle argStyle );
+
+
+void        ui_text_set( TUiText argUiText, const char* argNewText );
 
 
 void        ui_text_blit(TUiText argUiText, SDL_Surface *argDestinationPtr);

@@ -6,6 +6,7 @@
 #include <SDL/SDL.h>
 #include <SDL_ttf.h>
 
+#include "core/input.h"
 #include "core/macros.h"
 
 #include "ui_menus.h"
@@ -26,16 +27,16 @@
 /* ########################################################################## */
 /* ########################################################################## */
 
-int ui_construct(TUiContext *argContextPtr)
+int ui_construct(TContext *argContextPtr)
 {
     int retVal  = EXIT_SUCCESS;
 
 
     /* Instanciate the struct */
-    (*argContextPtr)    = (TUiContext)malloc(sizeof(struct _SUiContextPrivate));
+    (*argContextPtr).ui = (TUiContext)malloc(sizeof(struct _SUiContextPrivate));
 
     /* Create a pointer for convenience */
-    TUiContext  p_context   = (*argContextPtr);
+    TUiContext  p_context   = (*argContextPtr).ui;
 
     p_context->screenBackgroundColor    = C_SDL_COLOR_BLACK;
 
@@ -85,9 +86,18 @@ int ui_construct(TUiContext *argContextPtr)
         TRACE_ERR( "An error occured while creating TTF style 'title' !" );
         retVal  = EXIT_FAILURE;
     }
+    else if( ui_style_create( &(p_context->style_game_scores),
+                                  C_FONT_CONST1,
+                                  20,
+                                  C_SDL_COLOR_YELLOW ) )
+    {
+        TRACE_ERR("An error occured while creating TTF style 'game_scores' !");
+        retVal  = EXIT_FAILURE;
+    }
     else
     {
-        TRACE_DBG( "UI init success." )
+        input_init();
+        TRACE_DBG( "UI init success." );
     }
 
 
@@ -97,7 +107,7 @@ int ui_construct(TUiContext *argContextPtr)
 /* ########################################################################## */
 /* ########################################################################## */
 
-int ui_destruct(TUiContext *argContext)
+int ui_destruct(TContext *argContext)
 {
     int retVal  = EXIT_SUCCESS;
 
@@ -109,11 +119,12 @@ int ui_destruct(TUiContext *argContext)
     }
     else
     {
-        ui_style_delete( &((*argContext)->style_title) );
+        ui_style_delete( &(argContext->ui->style_game_scores) );
+        ui_style_delete( &(argContext->ui->style_title) );
 
         TTF_Quit();
         SDL_Quit();
-        FREE( (*argContext) )
+        FREE( argContext->ui )
     }
 
 
@@ -123,7 +134,7 @@ int ui_destruct(TUiContext *argContext)
 /* ########################################################################## */
 /* ########################################################################## */
 
-int     ui_exec(TUiContext *argContext)
+int     ui_exec(TContext *argContext)
 {
     int retVal  = EXIT_SUCCESS;
 
@@ -135,19 +146,6 @@ int     ui_exec(TUiContext *argContext)
 
 
     return retVal;
-}
-
-/* ########################################################################## */
-/* ########################################################################## */
-
-void ui_screenClear(TUiContext argContext)
-{
-    SDL_FillRect( argContext->screen,
-                  NULL,
-                  SDL_MapRGB( argContext->screen->format,
-                              argContext->screenBackgroundColor.r,
-                              argContext->screenBackgroundColor.g,
-                              argContext->screenBackgroundColor.b ) );
 }
 
 /* ########################################################################## */
