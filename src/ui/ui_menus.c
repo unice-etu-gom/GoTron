@@ -50,10 +50,10 @@ int     ui_menu_main(TContext *argContextPtr)
     TUiText txtSurvival = ui_text_create( "Survival",
                                           lStyleItemDefault );
 
-    TUiText txtPvAI     = ui_text_create( "Player Vs AI",
+    TUiText txtPvP      = ui_text_create( "Player Vs Player",
                                           lStyleItemDefault );
 
-    TUiText txtPvP      = ui_text_create( "Player Vs Player",
+    TUiText txtPvAI     = ui_text_create( "Player Vs AI",
                                           lStyleItemDefault );
 
     TUiText txtExit     = ui_text_create( "Exit",
@@ -73,28 +73,29 @@ int     ui_menu_main(TContext *argContextPtr)
                     ui_text_getRect(txtTitle).h );
 
 
+    int lPosY   = C_SCREEN_HEIGHT / 2;
     ui_text_setAlign( txtSurvival, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtSurvival,
                     C_SCREEN_WIDTH / 2,
-                    C_SCREEN_HEIGHT / 2 );
-
-    ui_text_setAlign( txtPvAI, EUiTextAlignCenter, EUiTextAlignMiddle );
-    ui_text_setPos( txtPvAI,
-                    C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtSurvival ).y
-                    + ui_text_getRect( txtSurvival ).h * 2 );
+                    lPosY );
+    lPosY   += ui_text_getRect( txtSurvival ).h * 2;
 
     ui_text_setAlign( txtPvP, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtPvP,
                     C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtPvAI ).y
-                    + ui_text_getRect( txtPvAI ).h * 2 );
+                    lPosY );
+    lPosY   += ui_text_getRect( txtPvP ).h * 2;
+
+    ui_text_setAlign( txtPvAI, EUiTextAlignCenter, EUiTextAlignMiddle );
+    ui_text_setPos( txtPvAI,
+                    C_SCREEN_WIDTH / 2,
+                    lPosY );
+    lPosY   += ui_text_getRect( txtPvAI ).h * 2;
 
     ui_text_setAlign( txtExit, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtExit,
                     C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtPvP ).y
-                    + ui_text_getRect( txtPvP ).h * 2 );
+                    lPosY );
 
 
 
@@ -163,8 +164,8 @@ int     ui_menu_main(TContext *argContextPtr)
     enum EMenuItems
     {
         EMenuItemSurvival = 0,
-        EMenuItemPvAI,
         EMenuItemPvP,
+        EMenuItemPvAI,
         EMenuItemExit,
 
         EMenuItemsCount
