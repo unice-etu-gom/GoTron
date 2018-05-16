@@ -179,6 +179,60 @@ int     ui_menu_main(TContext *argContextPtr)
     do
     {
         /* ---------------------------------------------------------------------
+         *  Manage display
+         */
+        ui_text_setStyle( txtSurvival,  lStyleItemDefault );
+        ui_text_setStyle( txtExit,      lStyleItemDefault );
+        ui_text_setStyle( txtPvAI,      lStyleItemDefault );
+        ui_text_setStyle( txtPvP,       lStyleItemDefault );
+
+        switch( lCurrentChoice )
+        {
+            case EMenuItemSurvival:
+                ui_text_setStyle( txtSurvival, lStyleItemHovered );
+                break;
+
+
+            case EMenuItemExit:
+                ui_text_setStyle( txtExit, lStyleItemHovered );
+                break;
+
+
+            case EMenuItemPvAI:
+                ui_text_setStyle( txtPvAI, lStyleItemHovered );
+                break;
+
+
+            case EMenuItemPvP:
+                ui_text_setStyle( txtPvP, lStyleItemHovered );
+                break;
+
+
+            default:
+                TRACE_ERR( "Unknown item index (%d) !",
+                           lCurrentChoice );
+                break;
+        }
+
+
+        ui_surfaceFill( p_contextUi->screen,
+                         argContextPtr->ui->screenBackgroundColor );
+
+        ui_text_blit( txtSurvival,  p_contextUi->screen );
+        ui_text_blit( txtExit,      p_contextUi->screen );
+        ui_text_blit( txtPvAI,      p_contextUi->screen );
+        ui_text_blit( txtPvP,       p_contextUi->screen );
+        ui_text_blit( txtTitle,     p_contextUi->screen );
+
+
+        if( SDL_Flip( p_contextUi->screen ) == -1 )
+        {
+            return 1;
+        }
+
+
+
+        /* ---------------------------------------------------------------------
          *  Intercept events and interpret them
          */
         SDL_WaitEvent( &lSdlEvent );
@@ -303,69 +357,6 @@ int     ui_menu_main(TContext *argContextPtr)
                     break;
             }
         }
-
-
-        /* Si l'utilisateur a cliqué sur le X de la fenetre */
-        if( lFlagQuit )
-        {
-            break;
-        }
-
-
-
-
-        /* ---------------------------------------------------------------------
-         *  Manage display
-         */
-        ui_text_setStyle( txtSurvival,  lStyleItemDefault );
-        ui_text_setStyle( txtExit,      lStyleItemDefault );
-        ui_text_setStyle( txtPvAI,      lStyleItemDefault );
-        ui_text_setStyle( txtPvP,       lStyleItemDefault );
-
-        switch( lCurrentChoice )
-        {
-            case EMenuItemSurvival:
-                ui_text_setStyle( txtSurvival, lStyleItemHovered );
-                break;
-
-
-            case EMenuItemExit:
-                ui_text_setStyle( txtExit, lStyleItemHovered );
-                break;
-
-
-            case EMenuItemPvAI:
-                ui_text_setStyle( txtPvAI, lStyleItemHovered );
-                break;
-
-
-            case EMenuItemPvP:
-                ui_text_setStyle( txtPvP, lStyleItemHovered );
-                break;
-
-
-            default:
-                TRACE_ERR( "Unknown item index (%d) !",
-                           lCurrentChoice );
-                break;
-        }
-
-
-        ui_surfaceFill( p_contextUi->screen,
-                         argContextPtr->ui->screenBackgroundColor );
-
-        ui_text_blit( txtSurvival,  p_contextUi->screen );
-        ui_text_blit( txtExit,      p_contextUi->screen );
-        ui_text_blit( txtPvAI,      p_contextUi->screen );
-        ui_text_blit( txtPvP,       p_contextUi->screen );
-        ui_text_blit( txtTitle,     p_contextUi->screen );
-
-
-        if( SDL_Flip( p_contextUi->screen ) == -1 )
-        {
-            return 1;
-        }
-
 
     } while( ! lFlagQuit );
 

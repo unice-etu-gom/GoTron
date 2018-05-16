@@ -34,7 +34,9 @@ void    input_init(void)
 
 void    input_flushPendingEvents()
 {
-    while( input_keyboardEvent_poll() != SDLK_UNKNOWN )
+    SDL_Event   lEvent;
+
+    while( SDL_PollEvent( &lEvent ) == 1 )
     {
         SDL_Delay( 5 );
     }
