@@ -35,12 +35,15 @@ void    s_registerHighScore( TUiContext         argContext,
                              int                argScore,
                              THighscoresList*   argListPtr )
 {
-    int     lDepth      = 32;
-    Uint32  lFlags      = SDL_HWSURFACE;
-    Uint32  lMaskR      = 0;
-    Uint32  lMaskG      = 0;
-    Uint32  lMaskB      = 0;
-    Uint32  lMaskA      = 0xFF;
+    char    lBuffer[16]     = {0};
+    size_t  lCharIdx        = 0;
+    int     lDepth          = 32;
+    Uint32  lFlags          = SDL_HWSURFACE;
+    TBool   lLoopContinue   = TRUE;
+    Uint32  lMaskR          = 0;
+    Uint32  lMaskG          = 0;
+    Uint32  lMaskB          = 0;
+    Uint32  lMaskA          = 0xFF;
 
 
     SDL_Surface* p_surf_base
@@ -78,14 +81,51 @@ void    s_registerHighScore( TUiContext         argContext,
     ui_text_setAlign( lTextInput,   EUiTextAlignMiddle, EUiTextAlignCenter );
 
 
+    /*
+     *  Manage a transition
+     */
+    /* Create a copy of the old screen */
+    SDL_Surface* p_sdlSurf_oldScreen
+            = SDL_CreateRGBSurface( 0,
+                                    argContext->screen->w,
+                                    argContext->screen->h,
+                                    32,
+                                    0, 0, 0, 0 );
+    ui_surfaceFill( p_sdlSurf_oldScreen, C_SDL_COLOR_BLACK );
+    SDL_BlitSurface( argContext->screen, NULL,
+                     p_sdlSurf_oldScreen, NULL );
+
+    /* Create a temporary display of the new screen */
+    /* Update text object */
+    char    lTextBuff[9]   = {0};
+    strncpy( lTextBuff, lBuffer, 9 );
+
+    size_t  lTmpIdx = strlen( lTextBuff );
+    while( lTmpIdx < 8 )
+    {
+        lTextBuff[ lTmpIdx ]    = '_';
+        lTmpIdx++;
+    }
+    lTextBuff[ lTmpIdx ]    = '\0';
+
+    ui_text_set( lTextInput, lTextBuff );
+
+    /* Update display */
+    ui_surfaceFill( p_surf_base, C_SDL_COLOR_BLACK );
+    ui_text_blit( lTextTitle,   p_surf_base );
+    ui_text_blit( lTextStatic,  p_surf_base );
+    ui_text_blit( lTextInput,   p_surf_base );
+
+
+    /* Proceed the transition */
+    ui_transitionIn( p_sdlSurf_oldScreen,
+                     p_surf_base,
+                     argContext->screen );
 
 
     /*
      *  Ask player's pseudo
      */
-    char    lBuffer[16]     = {0};
-    size_t  lCharIdx        = 0;
-    TBool   lLoopContinue   = TRUE;
     do
     {
         /* Update text object */
@@ -139,6 +179,8 @@ void    s_registerHighScore( TUiContext         argContext,
                 lCharIdx++;
             }
         }
+
+        SDL_Delay( 20 );
     } while( lLoopContinue );
 
     if( lBuffer[ 0 ] == '\0' )
@@ -239,14 +281,20 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
     SDL_Color       lBackgroundColor    = C_SDL_COLOR_BLACK;
     SDLKey          lKey                = SDLK_UNKNOWN;
     SDL_Rect        lOffset             = {0};
+    char            lStrBufferTmp[80]   = {0};
     SStyle          lStyleParagraph     = NULL;
+    SStyle          lStyleScores        = NULL;
     SStyle          lStyleTitle         = NULL;
     TUiText         lTextPressAKey      = NULL;
     TUiText         lTextScore          = NULL;
     TUiText         lTitleText          = NULL;
     SDL_Surface*    p_sdlSurf_newScreen = NULL;
     SDL_Surface*    p_sdlSurf_oldScreen = NULL;
-    SDL_Surface*    p_sdlSurf_result    = NULL;
+//    SDL_Surface*    p_sdlSurf_newScreen    = NULL;
+
+    TUiText lTextHSIDs[C_HIGHSCORES_MAXCOUNT];
+    TUiText lTextHSPseudos[C_HIGHSCORES_MAXCOUNT];
+    TUiText lTextHSScores[C_HIGHSCORES_MAXCOUNT];
 
 
     p_sdlSurf_oldScreen
@@ -261,14 +309,99 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
 
 
 
-    ui_style_create( &lStyleTitle, C_FONT_CONST1, 40, C_SDL_COLOR_BLACK );
+    ui_style_create( &lStyleParagraph, C_FONT_CONST1, 16, C_SDL_COLOR_RED );
+    ui_style_create( &lStyleScores, C_FONT_TRON,    20, C_SDL_COLOR_YELLOW );
+    ui_style_create( &lStyleTitle,  C_FONT_TRON,    40, C_SDL_COLOR_PINK );
 
     lTitleText  = ui_text_create( "End of game !", lStyleTitle );
     ui_text_setAlign( lTitleText, EUiTextAlignMiddle, EUiTextAlignBottom );
 
 
+    int lPosY       = argSurfDestPtr->h / 2;
+    int lTmpCount   = 0;
 
-    ui_style_create( &lStyleParagraph, C_FONT_CONST1, 16, C_SDL_COLOR_BLACK );
+    THighscoresListElt  lEltIterator    = argGame->highscores;
+    while(      lEltIterator != NULL
+            &&  lTmpCount < C_HIGHSCORES_MAXCOUNT )
+    {
+        snprintf( lStrBufferTmp, 80,
+                  "%d",
+                  lTmpCount+1 );
+        lTextHSIDs[ lTmpCount ] = ui_text_create( lStrBufferTmp, lStyleScores );
+
+        lTextHSPseudos[ lTmpCount ] = ui_text_create( lEltIterator->data.pseudo,
+                                                      lStyleScores );
+
+        snprintf( lStrBufferTmp, 80,
+                  "%d",
+                  lEltIterator->data.score );
+        lTextHSScores[ lTmpCount ]  = ui_text_create( lStrBufferTmp,
+                                                      lStyleScores );
+
+        ui_text_setPos( lTextHSIDs[ lTmpCount ],
+                        argSurfDestPtr->w / 3,
+                        lPosY );
+
+        ui_text_setPos( lTextHSPseudos[ lTmpCount ],
+                        argSurfDestPtr->w / 2,
+                        lPosY );
+
+        ui_text_setPos( lTextHSScores[ lTmpCount ],
+                        (argSurfDestPtr->w / 3) * 2,
+                        lPosY );
+
+
+        ui_text_setAlign( lTextHSIDs[ lTmpCount ],
+                          EUiTextAlignMiddle, EUiTextAlignBottom);
+
+        ui_text_setAlign( lTextHSPseudos[ lTmpCount ],
+                          EUiTextAlignMiddle, EUiTextAlignBottom);
+
+        ui_text_setAlign( lTextHSScores[ lTmpCount ],
+                          EUiTextAlignRight, EUiTextAlignBottom);
+
+
+        lPosY   += ui_text_getRect( lTextHSIDs[ lTmpCount ] ).h;
+
+        lTmpCount++;
+        lEltIterator    = lEltIterator->next;
+    }
+
+
+    for( int i = lTmpCount ; i < C_HIGHSCORES_MAXCOUNT ; i++ )
+    {
+        snprintf( lStrBufferTmp, 80,
+                  "%d",
+                  i+1 );
+        lTextHSIDs[ i ] = ui_text_create( lStrBufferTmp, lStyleScores );
+
+        lTextHSPseudos[ i ] = ui_text_create( "________", lStyleScores );
+        lTextHSScores[ i ]  = ui_text_create( "???", lStyleScores );
+
+        ui_text_setPos( lTextHSIDs[ i ],
+                        argSurfDestPtr->w / 3,
+                        lPosY );
+
+        ui_text_setPos( lTextHSPseudos[ i ],
+                        argSurfDestPtr->w / 2,
+                        lPosY );
+
+        ui_text_setAlign( lTextHSIDs[ i ],
+                          EUiTextAlignMiddle,
+                          EUiTextAlignBottom );
+
+        ui_text_setAlign( lTextHSPseudos[ i ],
+                          EUiTextAlignCenter,
+                          EUiTextAlignBottom );
+
+        ui_text_setAlign( lTextHSScores[ i ],
+                          EUiTextAlignRight,
+                          EUiTextAlignBottom );
+
+        lPosY   += ui_text_getRect( lTextHSIDs[ i ] ).h;
+    }
+
+
 
     lTextPressAKey  = ui_text_create( "<Press any key to continue>",
                                       lStyleParagraph );
@@ -281,7 +414,6 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
     /*
      *  Specific text
      */
-    char    lStrBufferTmp[80]   = {0};
     snprintf( lStrBufferTmp, 80,
               "Final score : %d",
               argGame->scorePlayer1 );
@@ -295,65 +427,6 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
     /* Flush events buffer */
     input_flushPendingEvents();
 
-    int lWidth  =   c_marginSize * 2
-                    + ui_text_getRect( lTitleText ).w
-                    + c_marginSize * 2;
-    int lHeight =   c_marginSize
-                    + ui_text_getRect( lTitleText ).h
-                    + c_marginSize
-                    + ui_text_getRect( lTextScore ).h
-                    + c_marginSize
-                    + ui_text_getRect( lTextPressAKey).h
-                    + c_marginSize;
-
-    p_sdlSurf_result
-            = SDL_CreateRGBSurface( 0,
-                                    lWidth,
-                                    lHeight,
-                                    32,
-                                    0, 0, 0, 0 );
-    ui_surfaceFill( p_sdlSurf_result, lBackgroundColor );
-    lOffset.x   = c_marginSize;
-    lOffset.y   = c_marginSize;
-    lOffset.w   = p_sdlSurf_result->w - (c_marginSize * 2);
-    lOffset.h   = p_sdlSurf_result->h - (c_marginSize * 2);
-    SDL_FillRect( p_sdlSurf_result,
-                  &lOffset,
-                  SDL_MapRGB( p_sdlSurf_result->format,
-                              C_SDL_COLOR_WHITE.r,
-                              C_SDL_COLOR_WHITE.g,
-                              C_SDL_COLOR_WHITE.b ) );
-
-    int lOffsetH    = c_marginSize;
-    ui_text_setPos( lTitleText,
-                    p_sdlSurf_result->w / 2,
-                    lOffsetH );
-    ui_text_blit( lTitleText,   p_sdlSurf_result );
-
-    lOffsetH    += ui_text_getRect( lTitleText ).h;
-    lOffsetH    += c_marginSize;
-    ui_text_setPos( lTextScore,
-                    p_sdlSurf_result->w / 2,
-                    lOffsetH );
-    ui_text_blit( lTextScore,   p_sdlSurf_result );
-
-
-    lOffsetH    += ui_text_getRect( lTextScore ).h;
-    lOffsetH    += c_marginSize;
-    ui_text_setPos( lTextPressAKey,
-                    p_sdlSurf_result->w / 2,
-                    lOffsetH );
-    ui_text_blit( lTextPressAKey,   p_sdlSurf_result );
-
-
-    lOffset.x   = (argSurfDestPtr->w - p_sdlSurf_result->w ) / 2;
-    lOffset.y   = (argSurfDestPtr->h - p_sdlSurf_result->h ) / 2;
-    lOffset.w   = 0;
-    lOffset.h   = 0;
-
-
-
-
 
     p_sdlSurf_newScreen
             = SDL_CreateRGBSurface( 0,
@@ -362,8 +435,55 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
                                     32,
                                     0, 0, 0, 0 );
     ui_surfaceFill( p_sdlSurf_newScreen, lBackgroundColor );
-    SDL_BlitSurface( p_sdlSurf_result, NULL,
-                     p_sdlSurf_newScreen, &lOffset );
+    lOffset.x   = c_marginSize;
+    lOffset.y   = c_marginSize;
+    lOffset.w   = p_sdlSurf_newScreen->w - (c_marginSize * 2);
+    lOffset.h   = p_sdlSurf_newScreen->h - (c_marginSize * 2);
+//    SDL_FillRect( p_sdlSurf_newScreen,
+//                  &lOffset,
+//                  SDL_MapRGB( p_sdlSurf_newScreen->format,
+//                              lBackgroundColor.r,
+//                              lBackgroundColor.g,
+//                              lBackgroundColor.b ) );
+
+    int lOffsetH    = p_sdlSurf_newScreen->h / 4;
+    ui_text_setPos( lTitleText,
+                    p_sdlSurf_newScreen->w / 2,
+                    lOffsetH );
+    ui_text_blit( lTitleText,   p_sdlSurf_newScreen );
+
+    lOffsetH    += ui_text_getRect( lTitleText ).h;
+    lOffsetH    += c_marginSize;
+    ui_text_setPos( lTextScore,
+                    p_sdlSurf_newScreen->w / 2,
+                    lOffsetH );
+    ui_text_blit( lTextScore,   p_sdlSurf_newScreen );
+
+
+    lOffsetH    += ui_text_getRect( lTextScore ).h;
+    lOffsetH    += c_marginSize;
+    ui_text_setPos( lTextPressAKey,
+                    p_sdlSurf_newScreen->w / 2,
+                    p_sdlSurf_newScreen->h
+                    - (c_marginSize * 2)
+                    - ui_text_getRect(lTextPressAKey).h );
+
+
+    lOffset.x   = (argSurfDestPtr->w - p_sdlSurf_newScreen->w ) / 2;
+    lOffset.y   = (argSurfDestPtr->h - p_sdlSurf_newScreen->h ) / 3;
+    lOffset.w   = 0;
+    lOffset.h   = 0;
+
+
+
+
+
+    for( int i = 0 ; i < C_HIGHSCORES_MAXCOUNT ; i++ )
+    {
+        ui_text_blit( lTextHSIDs[ i ],      p_sdlSurf_newScreen );
+        ui_text_blit( lTextHSPseudos[ i ],  p_sdlSurf_newScreen );
+        ui_text_blit( lTextHSScores[ i ],   p_sdlSurf_newScreen );
+    }
 
 
 
@@ -373,8 +493,8 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
 
 
 
-    ui_text_blit( lTextPressAKey, p_sdlSurf_result );
-    SDL_BlitSurface( p_sdlSurf_result, NULL,
+    ui_text_blit( lTextPressAKey, p_sdlSurf_newScreen );
+    SDL_BlitSurface( p_sdlSurf_newScreen, NULL,
                      argSurfDestPtr, &lOffset );
     SDL_Flip( argSurfDestPtr );
 
@@ -385,7 +505,7 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
     }
 
 
-    SDL_FreeSurface( p_sdlSurf_result );
+    SDL_FreeSurface( p_sdlSurf_newScreen );
 }
 
 /* ########################################################################## */
@@ -520,10 +640,9 @@ int ui_mode_survival_exec(TContext argContext)
     /*
      *  Display the score
      */
-    THighscoresList lHSList = highscoresList_load();
     TBool   lNewHighScore
             = highscoresList_checkIfAccepted(
-                  lHSList,
+                  argContext.ui->currentGame->highscores,
                   argContext.ui->currentGame->scorePlayer1 );
 
     if( lNewHighScore )
@@ -531,7 +650,7 @@ int ui_mode_survival_exec(TContext argContext)
         TRACE_DBG( "New high score detected." );
         s_registerHighScore( argContext.ui,
                              argContext.ui->currentGame->scorePlayer1,
-                             &lHSList );
+                             &argContext.ui->currentGame->highscores );
     }
 
     s_ui_mode_survival_displayFinalScore( argContext.ui->currentGame,

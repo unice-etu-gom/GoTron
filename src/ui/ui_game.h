@@ -5,6 +5,7 @@
 
 #include "core/grid.h"
 #include "core/TPosition2D.h"
+#include "core/data/highscores.h"
 
 #include "ui_text.h"
 
@@ -49,6 +50,8 @@ struct  SCurrentGame
     int                 scoreIncrement;
     int                 scorePlayer1;
     int                 scorePlayer2;
+
+    THighscoresList     highscores;
 
 
 

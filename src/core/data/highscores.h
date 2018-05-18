@@ -1,6 +1,8 @@
 #ifndef HIGHSCORES_H
 #define HIGHSCORES_H
 
+#include <stddef.h>
+
 #include "core/TBool.h"
 
 /* ########################################################################## */
@@ -29,6 +31,8 @@ void                highscoreElt_destroy( THighscoresListElt* argElt );
 /* ########################################################################## */
 
 typedef THighscoresListElt THighscoresList;
+
+extern const size_t C_HIGHSCORES_MAXCOUNT;
 
 
 THighscoresList highscoresList_load(void);
