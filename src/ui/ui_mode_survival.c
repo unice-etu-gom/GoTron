@@ -199,7 +199,9 @@ void    s_registerHighScore( TUiContext         argContext,
 
 
     /* Release local resources */
+    SDL_FreeSurface( p_sdlSurf_oldScreen );
     SDL_FreeSurface( p_surf_base );
+    ui_style_delete( &lStyleTitre );
     ui_text_delete( &lTextInput );
     ui_text_delete( &lTextStatic );
     ui_text_delete( &lTextTitle );
@@ -256,6 +258,8 @@ static void getIn( TContext argContext )
 
     /* Flush events buffer */
     input_flushPendingEvents();
+
+    SDL_FreeSurface( p_surf_tmpGame );
 }
 
 /* ########################################################################## */
@@ -505,6 +509,23 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
     }
 
 
+
+    /* Release resources */
+    ui_text_delete( &lTextPressAKey );
+    ui_text_delete( &lTextScore );
+    ui_text_delete( &lTitleText );
+    for( int i = 0 ; i < C_HIGHSCORES_MAXCOUNT ; i++ )
+    {
+        ui_text_delete( &(lTextHSIDs[ i ]) );
+        ui_text_delete( &(lTextHSPseudos[ i ]) );
+        ui_text_delete( &(lTextHSScores[ i ]) );
+    }
+
+    ui_style_delete( &lStyleParagraph );
+    ui_style_delete( &lStyleScores );
+    ui_style_delete( &lStyleTitle );
+
+    SDL_FreeSurface( p_sdlSurf_oldScreen );
     SDL_FreeSurface( p_sdlSurf_newScreen );
 }
 
@@ -655,7 +676,6 @@ int ui_mode_survival_exec(TContext argContext)
 
     s_ui_mode_survival_displayFinalScore( argContext.ui->currentGame,
                                           argContext.ui->screen );
-
 
     getOut( argContext );
     TRACE_DBG( "Mode Survival ended." );

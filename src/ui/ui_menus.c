@@ -370,6 +370,8 @@ int     ui_menu_main(TContext *argContextPtr)
     ui_text_delete( &txtPvAI );
     ui_text_delete( &txtPvP );
     ui_text_delete( &txtTitle );
+    ui_style_delete( &lStyleItemDefault );
+    ui_style_delete( &lStyleItemHovered );
 
     return retVal;
 }

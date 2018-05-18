@@ -95,6 +95,22 @@ TBool   highscoresList_checkIfAccepted(THighscoresList argList, int argScore)
 /* ########################################################################## */
 /* ########################################################################## */
 
+void    highscoresList_delete(THighscoresList *argListPtr)
+{
+    THighscoresListElt  eltNext = NULL;
+
+    while( *argListPtr != NULL )
+    {
+        eltNext = (*argListPtr)->next;
+
+        highscoreElt_destroy( argListPtr );
+        *argListPtr = eltNext;
+    }
+}
+
+/* ########################################################################## */
+/* ########################################################################## */
+
 void    highscoresList_insertEltOrdered( THighscoresList*       argListPtr,
                                          THighscoresListElt     argEltPtr )
 {

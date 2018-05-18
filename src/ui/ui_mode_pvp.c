@@ -78,6 +78,9 @@ static void getIn( TContext argContext )
 
     /* Flush events buffer */
     input_flushPendingEvents();
+
+    /* Release resources */
+    SDL_FreeSurface( p_surf_tmpGame );
 }
 
 /* ########################################################################## */
@@ -289,6 +292,19 @@ void    s_ui_mode_pvp_displayFinalScore( TSCurrentGame  argGame,
     }
 
 
+    /*
+     *  Release resources
+     */
+    ui_text_delete( &lTextPressAnyKey );
+    ui_text_delete( &lTextScoreP1 );
+    ui_text_delete( &lTextScoreP2 );
+    ui_text_delete( &lTitleText );
+
+    ui_style_delete( &lTextStyle );
+    ui_style_delete( &lTitleStyle );
+
+    SDL_FreeSurface( p_sdlSurf_newScreen );
+    SDL_FreeSurface( p_sdlSurf_oldScreen );
     SDL_FreeSurface( p_sdlSurf_result );
 }
 

@@ -277,6 +277,8 @@ void    ui_game_destroy(TSCurrentGame *argGamePtr)
 
     grid_destroy( (*argGamePtr)->gridData );
 
+    highscoresList_delete( &((*argGamePtr)->highscores) );
+
     FREE( (*argGamePtr) );
 }
 

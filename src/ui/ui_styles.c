@@ -1,5 +1,7 @@
 #include "ui_styles.h"
 
+#include "core/macros.h"
+
 /* ########################################################################## */
 /* ########################################################################## */
 
@@ -76,6 +78,7 @@ int     ui_style_create( SStyle*            argStylePtr,
 void    ui_style_delete(SStyle *argStylePtr)
 {
     TTF_CloseFont( (*argStylePtr)->p_font );
+    FREE( (*argStylePtr) );
 }
 
 /* ########################################################################## */

@@ -46,6 +46,8 @@ void    highscoresList_print(THighscoresList argList);
 
 TBool   highscoresList_checkIfAccepted(THighscoresList argList, int argScore);
 
+void    highscoresList_delete(THighscoresList* argListPtr);
+
 /* ########################################################################## */
 /* ########################################################################## */
 
