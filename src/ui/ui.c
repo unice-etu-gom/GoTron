@@ -41,15 +41,7 @@ int ui_construct(TContext *argContextPtr)
     p_context->screenBackgroundColor    = C_SDL_COLOR_BLACK;
 
 
-    if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
-    {
-        TRACE_ERR( "Can't init SDL:  %s",
-                   SDL_GetError() );
-
-        retVal  = EXIT_FAILURE;
-    }
-
-    else if( atexit( SDL_Quit ) != 0 )
+    if( atexit( SDL_Quit ) != 0 )
     {
         TRACE_ERR( "Can't init SDL: Error while registering SDL_Quit" );
 

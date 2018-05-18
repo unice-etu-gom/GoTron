@@ -1,4 +1,6 @@
 set ( CORE_SRC
+    audio.c
+    audio.h
     grid.c
     input.c
     input.h

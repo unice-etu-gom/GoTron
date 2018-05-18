@@ -1,5 +1,6 @@
 #include "ui_menus.h"
 
+#include "core/audio.h"
 #include "core/input.h"
 #include "core/macros.h"
 #include "core/TBool.h"
@@ -176,6 +177,8 @@ int     ui_menu_main(TContext *argContextPtr)
 
     input_flushPendingEvents();
 
+    audio_playMusic( argContextPtr->audio, EMusicMenu );
+
     do
     {
         /* ---------------------------------------------------------------------
@@ -242,11 +245,13 @@ int     ui_menu_main(TContext *argContextPtr)
                 switch( lSdlEvent.key.keysym.sym )
                 {
                     case    SDLK_DOWN:
+                        audio_playFx( argContextPtr->audio, EFxKeyPress );
                         lCurrentChoice++;
                         break;
 
 
                     case    SDLK_UP:
+                        audio_playFx( argContextPtr->audio, EFxKeyPress );
                         lCurrentChoice--;
                         break;
 
@@ -303,10 +308,12 @@ int     ui_menu_main(TContext *argContextPtr)
                                      p_surfMenuOld,
                                      NULL );
 
-                    /* Execution mode PvP */
+                    /* Execution mode Survival */
+                    audio_playMusic( argContextPtr->audio, EMusicGame );
                     ui_mode_survival_exec( *argContextPtr );
 
                     /* Restauration affichage menu */
+                    audio_playMusic( argContextPtr->audio, EMusicMenu );
                     ui_transition( p_contextUi->screen,
                                    p_surfMenuOld,
                                    p_contextUi->screen );
@@ -340,9 +347,11 @@ int     ui_menu_main(TContext *argContextPtr)
                                      NULL );
 
                     /* Execution mode PvP */
+                    audio_playMusic( argContextPtr->audio, EMusicGame );
                     ui_mode_pvp_exec( *argContextPtr );
 
                     /* Restauration affichage menu */
+                    audio_playMusic( argContextPtr->audio, EMusicMenu );
                     ui_transition( p_contextUi->screen,
                                    p_surfMenuOld,
                                    p_contextUi->screen );

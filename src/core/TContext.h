@@ -3,6 +3,7 @@
 
 #include "core/grid.h"
 
+typedef struct _SAudioContext*      TAudioContext;
 typedef struct _SUiContextPrivate*  TUiContext;
 
 /* ########################################################################## */
@@ -10,7 +11,8 @@ typedef struct _SUiContextPrivate*  TUiContext;
 
 typedef struct _SContext
 {
-    TUiContext  ui;
+    TAudioContext   audio;
+    TUiContext      ui;
 }   TContext;
 
 /* ########################################################################## */

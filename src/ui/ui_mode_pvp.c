@@ -4,6 +4,7 @@
 
 #include <SDL.h>
 
+#include "core/audio.h"
 #include "core/input.h"
 #include "core/TBool.h"
 
@@ -445,6 +446,10 @@ int ui_mode_pvp_exec(TContext argContext)
     /*
      *  End of game
      */
+
+    audio_playFx( argContext.audio, EFxExplosion );
+    audio_stopMusic();
+
     /* Let the trace of the losing player(s) blink */
     uint    lFlagsAll       = UI_GAME_FLAG_LAYERS_ALL;
     uint    lFlagsNoLosers  = UI_GAME_FLAG_LAYERS_ALL &~(lMoveResultFlags);

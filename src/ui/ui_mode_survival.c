@@ -4,6 +4,7 @@
 
 #include <SDL.h>
 
+#include "core/audio.h"
 #include "core/input.h"
 #include "core/TBool.h"
 #include "core/data/highscores.h"
@@ -31,7 +32,7 @@ static void s_ui_mode_survival_displayFinalScore(TSCurrentGame  argGame,
 /* ########################################################################## */
 /* ########################################################################## */
 
-void    s_registerHighScore( TUiContext         argContext,
+void    s_registerHighScore( TContext           argContext,
                              int                argScore,
                              THighscoresList*   argListPtr )
 {
@@ -48,8 +49,8 @@ void    s_registerHighScore( TUiContext         argContext,
 
     SDL_Surface* p_surf_base
             =  SDL_CreateRGBSurface( lFlags,
-                                     argContext->screen->w,
-                                     argContext->screen->h,
+                                     argContext.ui->screen->w,
+                                     argContext.ui->screen->h,
                                      lDepth,
                                      lMaskR, lMaskG, lMaskB, lMaskA );
 
@@ -59,22 +60,22 @@ void    s_registerHighScore( TUiContext         argContext,
     TUiText lTextTitle  = ui_text_create( "New High Score !",
                                           lStyleTitre );
     TUiText lTextStatic = ui_text_create( "Please enter your nickname :",
-                                          argContext->style_game_scores );
+                                          argContext.ui->style_game_scores );
 
     TUiText lTextInput  = ui_text_create( "________",
-                                          argContext->style_game_scores );
+                                          argContext.ui->style_game_scores );
 
     ui_text_setPos( lTextTitle,
-                    argContext->screen->w / 2,
-                    argContext->screen->h / 4 );
+                    argContext.ui->screen->w / 2,
+                    argContext.ui->screen->h / 4 );
 
     ui_text_setPos( lTextStatic,
-                    argContext->screen->w / 2,
-                    argContext->screen->h / 2 - ui_text_getRect(lTextStatic).h);
+                    argContext.ui->screen->w / 2,
+                    argContext.ui->screen->h / 2 - ui_text_getRect(lTextStatic).h);
 
     ui_text_setPos( lTextInput,
-                    argContext->screen->w / 2,
-                    argContext->screen->h / 2 + ui_text_getRect(lTextInput).h);
+                    argContext.ui->screen->w / 2,
+                    argContext.ui->screen->h / 2 + ui_text_getRect(lTextInput).h);
 
     ui_text_setAlign( lTextTitle,   EUiTextAlignMiddle, EUiTextAlignCenter );
     ui_text_setAlign( lTextStatic,  EUiTextAlignMiddle, EUiTextAlignCenter );
@@ -87,12 +88,12 @@ void    s_registerHighScore( TUiContext         argContext,
     /* Create a copy of the old screen */
     SDL_Surface* p_sdlSurf_oldScreen
             = SDL_CreateRGBSurface( 0,
-                                    argContext->screen->w,
-                                    argContext->screen->h,
+                                    argContext.ui->screen->w,
+                                    argContext.ui->screen->h,
                                     32,
                                     0, 0, 0, 0 );
     ui_surfaceFill( p_sdlSurf_oldScreen, C_SDL_COLOR_BLACK );
-    SDL_BlitSurface( argContext->screen, NULL,
+    SDL_BlitSurface( argContext.ui->screen, NULL,
                      p_sdlSurf_oldScreen, NULL );
 
     /* Create a temporary display of the new screen */
@@ -120,7 +121,7 @@ void    s_registerHighScore( TUiContext         argContext,
     /* Proceed the transition */
     ui_transitionIn( p_sdlSurf_oldScreen,
                      p_surf_base,
-                     argContext->screen );
+                     argContext.ui->screen );
 
 
     /*
@@ -148,8 +149,8 @@ void    s_registerHighScore( TUiContext         argContext,
         ui_text_blit( lTextStatic,  p_surf_base );
         ui_text_blit( lTextInput,   p_surf_base );
 
-        SDL_BlitSurface( p_surf_base, NULL, argContext->screen, NULL );
-        SDL_Flip( argContext->screen );
+        SDL_BlitSurface( p_surf_base, NULL, argContext.ui->screen, NULL );
+        SDL_Flip( argContext.ui->screen );
 
 
         /* Get user input */
@@ -165,12 +166,14 @@ void    s_registerHighScore( TUiContext         argContext,
         {
             if ( lCharIdx > 0 )
             {
+                audio_playFx( argContext.audio, EFxKeyPress );
                 lCharIdx--;
                 lBuffer[ lCharIdx ]  = '\0';
             }
         }
         else if(    SDLK_a <= lKey  &&  lKey <= SDLK_z )
         {
+            audio_playFx( argContext.audio, EFxKeyPress );
 //            ajouter le char dans le buffer
             if( lCharIdx < 8 )
             {
@@ -634,6 +637,8 @@ int ui_mode_survival_exec(TContext argContext)
     /*
      *  End of game
      */
+    audio_playFx( argContext.audio, EFxExplosion );
+    audio_stopMusic();
     /* Let the trace of the losing player(s) blink */
     uint    lFlagsAll       = UI_GAME_FLAG_LAYERS_ALL &~(UI_GAME_FLAG_P2);
     uint    lFlagsNoLosers  = lFlagsAll &~(lMoveResultFlags);
@@ -669,7 +674,7 @@ int ui_mode_survival_exec(TContext argContext)
     if( lNewHighScore )
     {
         TRACE_DBG( "New high score detected." );
-        s_registerHighScore( argContext.ui,
+        s_registerHighScore( argContext,
                              argContext.ui->currentGame->scorePlayer1,
                              &argContext.ui->currentGame->highscores );
     }
