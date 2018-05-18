@@ -7,6 +7,8 @@ set ( CORE_SRC
     TBool.h
     TPosition2D.h
 
+    data/highscores.c
+    data/highscores.h
     log/log.h
 )
 

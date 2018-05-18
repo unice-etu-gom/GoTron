@@ -6,6 +6,7 @@
 
 #include "core/input.h"
 #include "core/TBool.h"
+#include "core/data/highscores.h"
 
 #include "ui_game.h"
 #include "ui_private.h"
@@ -26,6 +27,141 @@
 
 static void s_ui_mode_survival_displayFinalScore(TSCurrentGame  argGame,
                                                  SDL_Surface*   argSurfDestPtr);
+
+/* ########################################################################## */
+/* ########################################################################## */
+
+void    s_registerHighScore( TUiContext         argContext,
+                             int                argScore,
+                             THighscoresList*   argListPtr )
+{
+    int     lDepth      = 32;
+    Uint32  lFlags      = SDL_HWSURFACE;
+    Uint32  lMaskR      = 0;
+    Uint32  lMaskG      = 0;
+    Uint32  lMaskB      = 0;
+    Uint32  lMaskA      = 0xFF;
+
+
+    SDL_Surface* p_surf_base
+            =  SDL_CreateRGBSurface( lFlags,
+                                     argContext->screen->w,
+                                     argContext->screen->h,
+                                     lDepth,
+                                     lMaskR, lMaskG, lMaskB, lMaskA );
+
+    SStyle lStyleTitre;
+    ui_style_create( &lStyleTitre, C_FONT_TRON, 40, C_SDL_COLOR_YELLOW );
+
+    TUiText lTextTitle  = ui_text_create( "New High Score !",
+                                          lStyleTitre );
+    TUiText lTextStatic = ui_text_create( "Please enter your nickname :",
+                                          argContext->style_game_scores );
+
+    TUiText lTextInput  = ui_text_create( "________",
+                                          argContext->style_game_scores );
+
+    ui_text_setPos( lTextTitle,
+                    argContext->screen->w / 2,
+                    argContext->screen->h / 4 );
+
+    ui_text_setPos( lTextStatic,
+                    argContext->screen->w / 2,
+                    argContext->screen->h / 2 - ui_text_getRect(lTextStatic).h);
+
+    ui_text_setPos( lTextInput,
+                    argContext->screen->w / 2,
+                    argContext->screen->h / 2 + ui_text_getRect(lTextInput).h);
+
+    ui_text_setAlign( lTextTitle,   EUiTextAlignMiddle, EUiTextAlignCenter );
+    ui_text_setAlign( lTextStatic,  EUiTextAlignMiddle, EUiTextAlignCenter );
+    ui_text_setAlign( lTextInput,   EUiTextAlignMiddle, EUiTextAlignCenter );
+
+
+
+
+    /*
+     *  Ask player's pseudo
+     */
+    char    lBuffer[16]     = {0};
+    size_t  lCharIdx        = 0;
+    TBool   lLoopContinue   = TRUE;
+    do
+    {
+        /* Update text object */
+        char    lTextBuff[9]   = {0};
+        strncpy( lTextBuff, lBuffer, 9 );
+
+        size_t  lTmpIdx = strlen( lTextBuff );
+        while( lTmpIdx < 8 )
+        {
+            lTextBuff[ lTmpIdx ]    = '_';
+            lTmpIdx++;
+        }
+        lTextBuff[ lTmpIdx ]    = '\0';
+
+        ui_text_set( lTextInput, lTextBuff );
+
+        /* Update display */
+        ui_surfaceFill( p_surf_base, C_SDL_COLOR_BLACK );
+        ui_text_blit( lTextTitle,   p_surf_base );
+        ui_text_blit( lTextStatic,  p_surf_base );
+        ui_text_blit( lTextInput,   p_surf_base );
+
+        SDL_BlitSurface( p_surf_base, NULL, argContext->screen, NULL );
+        SDL_Flip( argContext->screen );
+
+
+        /* Get user input */
+        SDLKey  lKey    = input_keyboardEvent_poll();
+
+        /* Proceed actions depending on input */
+        if( lKey == SDLK_RETURN )
+        {
+            /* End of loop */
+            lLoopContinue   = FALSE;
+        }
+        else if( lKey == SDLK_BACKSPACE )
+        {
+            if ( lCharIdx > 0 )
+            {
+                lCharIdx--;
+                lBuffer[ lCharIdx ]  = '\0';
+            }
+        }
+        else if(    SDLK_a <= lKey  &&  lKey <= SDLK_z )
+        {
+//            ajouter le char dans le buffer
+            if( lCharIdx < 8 )
+            {
+                lBuffer[lCharIdx]   = (char)lKey + 'A'-'a';
+                TRACE_DBG( "Char valide : %c", lBuffer[lCharIdx] );
+                lCharIdx++;
+            }
+        }
+    } while( lLoopContinue );
+
+    if( lBuffer[ 0 ] == '\0' )
+    {
+        lBuffer[ 0 ]    = '?';
+        lBuffer[ 1 ]    = '?';
+        lBuffer[ 2 ]    = '?';
+        lBuffer[ 3 ]    = '\0';
+    }
+
+
+    THighscoresListElt  p_elt   = highscoreElt_create( lBuffer, argScore );
+    highscoresList_insertEltOrdered( argListPtr, p_elt );
+    highscoresList_save( *argListPtr );
+
+
+
+    /* Release local resources */
+    SDL_FreeSurface( p_surf_base );
+    ui_text_delete( &lTextInput );
+    ui_text_delete( &lTextStatic );
+    ui_text_delete( &lTextTitle );
+}
 
 /* ########################################################################## */
 /* ########################################################################## */
@@ -100,7 +236,7 @@ void    s_ui_mode_survival_displayFinalScore( TSCurrentGame argGame,
 
     const int       c_marginSize        = 5;
 
-    SDL_Color       lBackgroundColor    = C_SDL_COLOR_RED;
+    SDL_Color       lBackgroundColor    = C_SDL_COLOR_BLACK;
     SDLKey          lKey                = SDLK_UNKNOWN;
     SDL_Rect        lOffset             = {0};
     SStyle          lStyleParagraph     = NULL;
@@ -384,8 +520,22 @@ int ui_mode_survival_exec(TContext argContext)
     /*
      *  Display the score
      */
+    THighscoresList lHSList = highscoresList_load();
+    TBool   lNewHighScore
+            = highscoresList_checkIfAccepted(
+                  lHSList,
+                  argContext.ui->currentGame->scorePlayer1 );
+
+    if( lNewHighScore )
+    {
+        TRACE_DBG( "New high score detected." );
+        s_registerHighScore( argContext.ui,
+                             argContext.ui->currentGame->scorePlayer1,
+                             &lHSList );
+    }
+
     s_ui_mode_survival_displayFinalScore( argContext.ui->currentGame,
-                                        argContext.ui->screen );
+                                          argContext.ui->screen );
 
 
     getOut( argContext );
