@@ -14,6 +14,7 @@ target_link_libraries( ${EXE}
     core
     ${SDL_LIBRARY}
     ${SDL_TTF_LIBRARY}
+    ${SDL_MIXER_LIBRARY}
 #    ${CURSES_LIBRARIES}
 #    ${CURSES_LIBS}
 #    ${CDK_LIBS}

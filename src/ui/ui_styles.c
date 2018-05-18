@@ -1,5 +1,7 @@
 #include "ui_styles.h"
 
+#include "core/macros.h"
+
 /* ########################################################################## */
 /* ########################################################################## */
 
@@ -36,8 +38,8 @@ SDL_Color   C_SDL_COLOR_BLUE    = {   0,      0,    255 };
 SDL_Color   C_SDL_COLOR_PINK    = { 255,      0,    255 };
 
 
-const char* C_FONT_CONST1       = "MAKISUPA.TTF";
-const char* C_FONT_TRON         = "Tr2n.ttf";
+const char* C_FONT_CONST1       = "rsrc/fonts/MAKISUPA.TTF";
+const char* C_FONT_TRON         = "rsrc/fonts/Tr2n.ttf";
 
 /* ########################################################################## */
 /* ########################################################################## */
@@ -76,6 +78,7 @@ int     ui_style_create( SStyle*            argStylePtr,
 void    ui_style_delete(SStyle *argStylePtr)
 {
     TTF_CloseFont( (*argStylePtr)->p_font );
+    FREE( (*argStylePtr) );
 }
 
 /* ########################################################################## */

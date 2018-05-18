@@ -1,5 +1,6 @@
 #include "ui_menus.h"
 
+#include "core/audio.h"
 #include "core/input.h"
 #include "core/macros.h"
 #include "core/TBool.h"
@@ -50,10 +51,10 @@ int     ui_menu_main(TContext *argContextPtr)
     TUiText txtSurvival = ui_text_create( "Survival",
                                           lStyleItemDefault );
 
-    TUiText txtPvAI     = ui_text_create( "Player Vs AI",
+    TUiText txtPvP      = ui_text_create( "Player Vs Player",
                                           lStyleItemDefault );
 
-    TUiText txtPvP      = ui_text_create( "Player Vs Player",
+    TUiText txtPvAI     = ui_text_create( "Player Vs AI",
                                           lStyleItemDefault );
 
     TUiText txtExit     = ui_text_create( "Exit",
@@ -73,28 +74,29 @@ int     ui_menu_main(TContext *argContextPtr)
                     ui_text_getRect(txtTitle).h );
 
 
+    int lPosY   = C_SCREEN_HEIGHT / 2;
     ui_text_setAlign( txtSurvival, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtSurvival,
                     C_SCREEN_WIDTH / 2,
-                    C_SCREEN_HEIGHT / 2 );
-
-    ui_text_setAlign( txtPvAI, EUiTextAlignCenter, EUiTextAlignMiddle );
-    ui_text_setPos( txtPvAI,
-                    C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtSurvival ).y
-                    + ui_text_getRect( txtSurvival ).h * 2 );
+                    lPosY );
+    lPosY   += ui_text_getRect( txtSurvival ).h * 2;
 
     ui_text_setAlign( txtPvP, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtPvP,
                     C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtPvAI ).y
-                    + ui_text_getRect( txtPvAI ).h * 2 );
+                    lPosY );
+    lPosY   += ui_text_getRect( txtPvP ).h * 2;
+
+    ui_text_setAlign( txtPvAI, EUiTextAlignCenter, EUiTextAlignMiddle );
+    ui_text_setPos( txtPvAI,
+                    C_SCREEN_WIDTH / 2,
+                    lPosY );
+    lPosY   += ui_text_getRect( txtPvAI ).h * 2;
 
     ui_text_setAlign( txtExit, EUiTextAlignCenter, EUiTextAlignMiddle );
     ui_text_setPos( txtExit,
                     C_SCREEN_WIDTH / 2,
-                    ui_text_getRect( txtPvP ).y
-                    + ui_text_getRect( txtPvP ).h * 2 );
+                    lPosY );
 
 
 
@@ -163,8 +165,8 @@ int     ui_menu_main(TContext *argContextPtr)
     enum EMenuItems
     {
         EMenuItemSurvival = 0,
-        EMenuItemPvAI,
         EMenuItemPvP,
+        EMenuItemPvAI,
         EMenuItemExit,
 
         EMenuItemsCount
@@ -175,8 +177,64 @@ int     ui_menu_main(TContext *argContextPtr)
 
     input_flushPendingEvents();
 
+    audio_playMusic( argContextPtr->audio, EMusicMenu );
+
     do
     {
+        /* ---------------------------------------------------------------------
+         *  Manage display
+         */
+        ui_text_setStyle( txtSurvival,  lStyleItemDefault );
+        ui_text_setStyle( txtExit,      lStyleItemDefault );
+        ui_text_setStyle( txtPvAI,      lStyleItemDefault );
+        ui_text_setStyle( txtPvP,       lStyleItemDefault );
+
+        switch( lCurrentChoice )
+        {
+            case EMenuItemSurvival:
+                ui_text_setStyle( txtSurvival, lStyleItemHovered );
+                break;
+
+
+            case EMenuItemExit:
+                ui_text_setStyle( txtExit, lStyleItemHovered );
+                break;
+
+
+            case EMenuItemPvAI:
+                ui_text_setStyle( txtPvAI, lStyleItemHovered );
+                break;
+
+
+            case EMenuItemPvP:
+                ui_text_setStyle( txtPvP, lStyleItemHovered );
+                break;
+
+
+            default:
+                TRACE_ERR( "Unknown item index (%d) !",
+                           lCurrentChoice );
+                break;
+        }
+
+
+        ui_surfaceFill( p_contextUi->screen,
+                         argContextPtr->ui->screenBackgroundColor );
+
+        ui_text_blit( txtSurvival,  p_contextUi->screen );
+        ui_text_blit( txtExit,      p_contextUi->screen );
+        ui_text_blit( txtPvAI,      p_contextUi->screen );
+        ui_text_blit( txtPvP,       p_contextUi->screen );
+        ui_text_blit( txtTitle,     p_contextUi->screen );
+
+
+        if( SDL_Flip( p_contextUi->screen ) == -1 )
+        {
+            return 1;
+        }
+
+
+
         /* ---------------------------------------------------------------------
          *  Intercept events and interpret them
          */
@@ -187,11 +245,13 @@ int     ui_menu_main(TContext *argContextPtr)
                 switch( lSdlEvent.key.keysym.sym )
                 {
                     case    SDLK_DOWN:
+                        audio_playFx( argContextPtr->audio, EFxKeyPress );
                         lCurrentChoice++;
                         break;
 
 
                     case    SDLK_UP:
+                        audio_playFx( argContextPtr->audio, EFxKeyPress );
                         lCurrentChoice--;
                         break;
 
@@ -248,10 +308,12 @@ int     ui_menu_main(TContext *argContextPtr)
                                      p_surfMenuOld,
                                      NULL );
 
-                    /* Execution mode PvP */
+                    /* Execution mode Survival */
+                    audio_playMusic( argContextPtr->audio, EMusicGame );
                     ui_mode_survival_exec( *argContextPtr );
 
                     /* Restauration affichage menu */
+                    audio_playMusic( argContextPtr->audio, EMusicMenu );
                     ui_transition( p_contextUi->screen,
                                    p_surfMenuOld,
                                    p_contextUi->screen );
@@ -285,9 +347,11 @@ int     ui_menu_main(TContext *argContextPtr)
                                      NULL );
 
                     /* Execution mode PvP */
+                    audio_playMusic( argContextPtr->audio, EMusicGame );
                     ui_mode_pvp_exec( *argContextPtr );
 
                     /* Restauration affichage menu */
+                    audio_playMusic( argContextPtr->audio, EMusicMenu );
                     ui_transition( p_contextUi->screen,
                                    p_surfMenuOld,
                                    p_contextUi->screen );
@@ -303,69 +367,6 @@ int     ui_menu_main(TContext *argContextPtr)
             }
         }
 
-
-        /* Si l'utilisateur a cliqué sur le X de la fenetre */
-        if( lFlagQuit )
-        {
-            break;
-        }
-
-
-
-
-        /* ---------------------------------------------------------------------
-         *  Manage display
-         */
-        ui_text_setStyle( txtSurvival,  lStyleItemDefault );
-        ui_text_setStyle( txtExit,      lStyleItemDefault );
-        ui_text_setStyle( txtPvAI,      lStyleItemDefault );
-        ui_text_setStyle( txtPvP,       lStyleItemDefault );
-
-        switch( lCurrentChoice )
-        {
-            case EMenuItemSurvival:
-                ui_text_setStyle( txtSurvival, lStyleItemHovered );
-                break;
-
-
-            case EMenuItemExit:
-                ui_text_setStyle( txtExit, lStyleItemHovered );
-                break;
-
-
-            case EMenuItemPvAI:
-                ui_text_setStyle( txtPvAI, lStyleItemHovered );
-                break;
-
-
-            case EMenuItemPvP:
-                ui_text_setStyle( txtPvP, lStyleItemHovered );
-                break;
-
-
-            default:
-                TRACE_ERR( "Unknown item index (%d) !",
-                           lCurrentChoice );
-                break;
-        }
-
-
-        ui_surfaceFill( p_contextUi->screen,
-                         argContextPtr->ui->screenBackgroundColor );
-
-        ui_text_blit( txtSurvival,  p_contextUi->screen );
-        ui_text_blit( txtExit,      p_contextUi->screen );
-        ui_text_blit( txtPvAI,      p_contextUi->screen );
-        ui_text_blit( txtPvP,       p_contextUi->screen );
-        ui_text_blit( txtTitle,     p_contextUi->screen );
-
-
-        if( SDL_Flip( p_contextUi->screen ) == -1 )
-        {
-            return 1;
-        }
-
-
     } while( ! lFlagQuit );
 
 
@@ -378,6 +379,8 @@ int     ui_menu_main(TContext *argContextPtr)
     ui_text_delete( &txtPvAI );
     ui_text_delete( &txtPvP );
     ui_text_delete( &txtTitle );
+    ui_style_delete( &lStyleItemDefault );
+    ui_style_delete( &lStyleItemHovered );
 
     return retVal;
 }

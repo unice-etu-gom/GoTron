@@ -186,6 +186,7 @@ TSCurrentGame   ui_game_create(SDL_Surface* argScreenSurfacePtr,
     retVal->player2Pos.x        = lGameWidth;
     retVal->player2Pos.y        = lGameHeight / 2;
 
+    retVal->highscores  = highscoresList_load();
 
 
     retVal->P1ScoreText = ui_text_create( "Player 1  : XXXXX", argStyleScore );
@@ -275,6 +276,8 @@ void    ui_game_destroy(TSCurrentGame *argGamePtr)
     ui_text_delete( &((*argGamePtr)->P2ScoreText) );
 
     grid_destroy( (*argGamePtr)->gridData );
+
+    highscoresList_delete( &((*argGamePtr)->highscores) );
 
     FREE( (*argGamePtr) );
 }
